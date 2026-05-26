@@ -44,9 +44,28 @@ describe("POST /api/scripts", () => {
   });
 });
 
+describe("POST /api/scripts — expires field", () => {
+  it("accepts expires=1h on API", async () => {
+    const res = await post({ content: "x", visibility: "public", expires: "1h" });
+    expect(res.status).toBe(201);
+    const json: any = await res.json();
+    expect(json.slug).toMatch(/^[0-9A-Za-z]{4,6}$/);
+  });
+
+  it("accepts expires=1run on API", async () => {
+    const res = await post({ content: "x", visibility: "public", expires: "1run" });
+    expect(res.status).toBe(201);
+  });
+
+  it("rejects invalid expires value with 400", async () => {
+    const res = await post({ content: "x", visibility: "public", expires: "forever" });
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("DELETE /api/scripts/:slug", () => {
   it("deletes when delete_token is correct", async () => {
-    const created: any = await (await post({ content: "rm me", visibility: "public" })).json();
+    const created: any = await (await post({ content: "rm me", visibility: "public" }, "198.51.100.10")).json();
     const del = await SELF.fetch(`http://x/api/scripts/${created.slug}`, {
       method: "DELETE",
       headers: { "x-delete-token": created.delete_token },
@@ -55,7 +74,7 @@ describe("DELETE /api/scripts/:slug", () => {
   });
 
   it("rejects wrong delete_token with 403", async () => {
-    const created: any = await (await post({ content: "keep me", visibility: "public" })).json();
+    const created: any = await (await post({ content: "keep me", visibility: "public" }, "198.51.100.11")).json();
     const del = await SELF.fetch(`http://x/api/scripts/${created.slug}`, {
       method: "DELETE",
       headers: { "x-delete-token": "wrong" },

@@ -7,6 +7,7 @@ import {
 } from "../repos/scripts";
 import { generateDeleteToken, hashToken, verifyToken } from "../tokens";
 import { checkAnonymousLimit } from "../ratelimit";
+import { parseExpires } from "../expires";
 
 export const MAX_ANON_SIZE = 16 * 1024;
 
@@ -18,7 +19,8 @@ export async function createAnonymous(
   env: Env,
   ip: string,
   content: unknown,
-  visibility: unknown
+  visibility: unknown,
+  expires: unknown
 ): Promise<CreateResult> {
   if (typeof content !== "string") {
     return { ok: false, status: 400, error: "content required" };
@@ -32,14 +34,25 @@ export async function createAnonymous(
   if (!(await checkAnonymousLimit(env.SCRIPT_CACHE, ip))) {
     return { ok: false, status: 429, error: "rate limit exceeded" };
   }
+
+  let parsed;
+  try {
+    parsed = parseExpires(
+      typeof expires === "string" ? expires : undefined,
+      { authed: false, nowMs: Date.now() }
+    );
+  } catch (e) {
+    return { ok: false, status: 400, error: (e as Error).message };
+  }
+
   const deleteToken = generateDeleteToken();
   const deleteTokenHash = await hashToken(deleteToken);
-  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
   const row = await createHostedScript(env.DB, {
     content,
     visibility,
     deleteTokenHash,
-    expiresAt,
+    expiresAt: parsed.expiresAt,
+    singleUse: parsed.singleUse,
   });
   return { ok: true, slug: row.slug, deleteToken };
 }
@@ -53,7 +66,8 @@ apiScripts.post("/api/scripts", async (c) => {
     c.env,
     ip,
     body?.content,
-    body?.visibility
+    body?.visibility,
+    body?.expires
   );
   if (!result.ok) return c.json({ error: result.error }, result.status);
   return c.json(

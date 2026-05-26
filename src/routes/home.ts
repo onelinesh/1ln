@@ -15,7 +15,8 @@ home.post("/", async (c) => {
     c.env,
     ip,
     form.get("content"),
-    form.get("visibility")
+    form.get("visibility"),
+    "7d-web-default"
   );
   if (!result.ok) return c.text(result.error, result.status);
   return c.html(renderResult({ slug: result.slug, deleteToken: result.deleteToken }));
