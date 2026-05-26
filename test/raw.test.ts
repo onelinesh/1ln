@@ -1,0 +1,50 @@
+import { describe, it, expect } from "vitest";
+import { SELF } from "cloudflare:test";
+
+async function createScript(content: string) {
+  const res = await SELF.fetch("http://x/api/scripts", {
+    method: "POST",
+    headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.1" },
+    body: JSON.stringify({ content, visibility: "public" }),
+  });
+  return (await res.json()) as { slug: string };
+}
+
+describe("GET /:slug", () => {
+  it("returns raw script as text/plain", async () => {
+    const { slug } = await createScript("echo hello");
+    const res = await SELF.fetch(`http://x/${slug}`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/^text\/plain/);
+    expect(await res.text()).toBe("echo hello");
+  });
+
+  it("returns 404 for missing slug", async () => {
+    const res = await SELF.fetch("http://x/nonexistent");
+    expect(res.status).toBe(404);
+  });
+
+  it("does NOT return text/html for bare curl-style request", async () => {
+    const { slug } = await createScript("echo a");
+    const res = await SELF.fetch(`http://x/${slug}`);
+    expect(res.headers.get("content-type")).not.toMatch(/html/);
+  });
+
+  it("delete via /api/scripts removes from raw access (verifies KV cache invalidation)", async () => {
+    const created: any = await (await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.50" },
+      body: JSON.stringify({ content: "tmp", visibility: "public" }),
+    })).json();
+    // Warm cache by reading once.
+    await SELF.fetch(`http://x/${created.slug}`);
+    // Delete.
+    await SELF.fetch(`http://x/api/scripts/${created.slug}`, {
+      method: "DELETE",
+      headers: { "x-delete-token": created.delete_token },
+    });
+    // Should now 404.
+    const after = await SELF.fetch(`http://x/${created.slug}`);
+    expect(after.status).toBe(404);
+  });
+});
