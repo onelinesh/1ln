@@ -78,9 +78,9 @@ describe("GET /gh/...", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/text\/html/);
     const html = await res.text();
-    expect(html).toContain("echo preview");
+    expect(html).toContain("preview");
     expect(html).toContain("raw.githubusercontent.com/gh3/bar3/main/install.sh");
-    expect(html).toContain("can change"); // the branch-ref warning
+    expect(html).toContain("can change"); // the branch-ref warning (in title attribute)
   });
 
   it("?view with SHA ref shows no warning", async () => {
@@ -90,5 +90,27 @@ describe("GET /gh/...", () => {
     expect(res.status).toBe(200);
     const html = await res.text();
     expect(html).not.toContain("can change");
+  });
+
+  it("?view on a branch ref shows an amber 'Following: <ref>' chip", async () => {
+    intercept("/foo/bar/main/install.sh", 200, "echo polished");
+    const res = await SELF.fetch("http://x/gh/foo/bar?view");
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain('class="chip accent"');
+    expect(html).toMatch(/Following/i);
+    expect(html).toContain("main");
+    expect(html).toContain('class="copy-btn"');
+    expect(html).toContain('class="sh-keyword"');
+  });
+
+  it("?view on a SHA ref shows a 'Pinned' chip and no branch warning", async () => {
+    const sha = "a".repeat(40);
+    intercept(`/foo/bar/${sha}/install.sh`, 200, "echo sha");
+    const res = await SELF.fetch(`http://x/gh/foo/bar@${sha}?view`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toMatch(/Pinned/);
+    expect(html).not.toMatch(/Following/);
   });
 });
