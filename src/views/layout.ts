@@ -57,6 +57,12 @@ pre { background: var(--surface); border: 1px solid var(--border); padding: 14px
 @media (max-width: 480px) {
   .wrap { padding: 20px 14px 36px; }
 }
+
+.code-row { display: flex; align-items: stretch; gap: 0; margin: 0 0 14px; }
+.code-row pre { flex: 1; margin: 0; border-radius: 6px 0 0 6px; border-right: none; }
+.copy-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; background: var(--surface); border: 1px solid var(--border); border-radius: 0 6px 6px 0; color: var(--text-secondary); cursor: pointer; font-family: var(--font); transition: color .12s, border-color .12s; }
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent); }
 `.trim();
 
 export function layout(title: string, body: string): string {
