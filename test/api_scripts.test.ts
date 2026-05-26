@@ -31,6 +31,14 @@ describe("POST /api/scripts", () => {
     expect(res.status).toBe(413);
   });
 
+  it("rejects multibyte content that exceeds 16KB when UTF-8 encoded", async () => {
+    // '한' is 3 UTF-8 bytes but 1 UTF-16 code unit.
+    // 8000 chars × 3 bytes = 24 000 bytes > 16 384. Old length check would pass (8000 < 16384).
+    const big = "한".repeat(8000);
+    const res = await post({ content: big, visibility: "public" });
+    expect(res.status).toBe(413);
+  });
+
   it("rejects missing visibility", async () => {
     const res = await post({ content: "echo hi" });
     expect(res.status).toBe(400);
