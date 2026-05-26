@@ -63,6 +63,10 @@ pre { background: var(--surface); border: 1px solid var(--border); padding: 14px
 .copy-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; background: var(--surface); border: 1px solid var(--border); border-radius: 0 6px 6px 0; color: var(--text-secondary); cursor: pointer; font-family: var(--font); transition: color .12s, border-color .12s; }
 .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
 .copy-btn.copied { color: var(--accent); border-color: var(--accent); }
+
+.sh-comment { color: var(--text-muted); font-style: italic; }
+.sh-string { color: var(--accent); }
+.sh-keyword { color: var(--text); font-weight: 700; }
 `.trim();
 
 export function layout(title: string, body: string): string {
