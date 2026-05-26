@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0d0d0d"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#232323" stroke-width="1" rx="12"/>
+  <text x="80" y="170"
+        font-family="'IBM Plex Mono', monospace"
+        font-weight="700"
+        font-size="64"
+        fill="#e8e1d8">
+    <tspan fill="#8a8a8a" font-weight="400">$</tspan> 1ln<tspan fill="#f5a623">.sh</tspan>
+  </text>
+  <text x="80" y="290"
+        font-family="'IBM Plex Mono', monospace"
+        font-weight="400"
+        font-size="40"
+        fill="#e8e1d8">paste a script.</text>
+  <text x="80" y="345"
+        font-family="'IBM Plex Mono', monospace"
+        font-weight="400"
+        font-size="40"
+        fill="#e8e1d8">get a curl URL.</text>
+  <text x="80" y="510"
+        font-family="'IBM Plex Mono', monospace"
+        font-weight="700"
+        font-size="36"
+        fill="#f5a623">curl 1ln.sh/oGcP | sh</text>
+</svg>

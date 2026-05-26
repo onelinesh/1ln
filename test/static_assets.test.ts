@@ -25,4 +25,19 @@ describe("static assets", () => {
     expect(text).toContain("<svg");
     expect(text).toContain("#f5a623");
   });
+
+  it("serves /favicon.ico", async () => {
+    const res = await env.ASSETS.fetch("http://x/favicon.ico");
+    expect(res.status).toBe(200);
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(500);
+  });
+
+  it("serves /og.png as image/png at 1200x630-ish bytes", async () => {
+    const res = await env.ASSETS.fetch("http://x/og.png");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/image\/png/);
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(10_000);
+  });
 });
