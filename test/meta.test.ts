@@ -22,7 +22,7 @@ describe("GET /:slug?meta", () => {
     expect(json.sha256).toMatch(/^[0-9a-f]{64}$/);
     expect(json.visibility).toBe("public");
     expect(typeof json.created_at).toBe("number");
-    expect(json.expires_at).toBeNull();
+    expect(typeof json.expires_at).toBe("number");
     expect(json.source).toBe("hosted");
     expect(json.pinned_ref).toBeNull();
   });

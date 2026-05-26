@@ -34,10 +34,12 @@ export async function createAnonymous(
   }
   const deleteToken = generateDeleteToken();
   const deleteTokenHash = await hashToken(deleteToken);
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
   const row = await createHostedScript(env.DB, {
     content,
     visibility,
     deleteTokenHash,
+    expiresAt,
   });
   return { ok: true, slug: row.slug, deleteToken };
 }
