@@ -2,11 +2,10 @@ import { describe, it, expect } from "vitest";
 import { generatePublicSlug, generatePrivateSlug, BASE62 } from "../src/slug";
 
 describe("generatePublicSlug", () => {
-  it("returns 4-6 char base62", () => {
+  it("returns exactly 4 char base62", () => {
     for (let i = 0; i < 100; i++) {
       const s = generatePublicSlug();
-      expect(s.length).toBeGreaterThanOrEqual(4);
-      expect(s.length).toBeLessThanOrEqual(6);
+      expect(s.length).toBe(4);
       for (const c of s) expect(BASE62).toContain(c);
     }
   });

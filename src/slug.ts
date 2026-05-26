@@ -1,7 +1,7 @@
 export const BASE62 =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-function randomBase62(len: number): string {
+export function randomBase62(len: number): string {
   const buf = new Uint8Array(len);
   crypto.getRandomValues(buf);
   let out = "";
@@ -10,6 +10,7 @@ function randomBase62(len: number): string {
 }
 
 export function generatePublicSlug(): string {
+  // 4 chars of base62 = ~14.7M slug space; widen to 5/6 if we ever saturate.
   return randomBase62(4);
 }
 

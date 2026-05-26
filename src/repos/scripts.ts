@@ -58,6 +58,7 @@ export async function createHostedScript(
       return (await getScriptBySlug(db, slug))!;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
+      // `slug` is the only UNIQUE column in this table, so any UNIQUE violation = slug collision.
       if (!msg.includes("UNIQUE")) throw e;
       // else retry on slug collision
     }
@@ -76,6 +77,7 @@ export async function getScriptBySlug(
   return row ?? null;
 }
 
+/** Silent no-op when the slug does not exist. Callers must verify existence if they need a 404. */
 export async function deleteScript(db: D1Database, slug: string): Promise<void> {
   await db.prepare("DELETE FROM scripts WHERE slug = ?").bind(slug).run();
 }

@@ -1,11 +1,7 @@
-import { BASE62 } from "./slug";
+import { randomBase62 } from "./slug";
 
 export function generateDeleteToken(): string {
-  const buf = new Uint8Array(32);
-  crypto.getRandomValues(buf);
-  let out = "";
-  for (let i = 0; i < 32; i++) out += BASE62[buf[i]! % 62];
-  return out;
+  return randomBase62(32);
 }
 
 export async function hashToken(token: string): Promise<string> {
