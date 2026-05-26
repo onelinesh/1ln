@@ -1,0 +1,17 @@
+name = "oneln"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "oneln"
+database_id = "00000000-0000-0000-0000-000000000001"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "SCRIPT_CACHE"
+id = "00000000-0000-0000-0000-000000000002"
+
+[triggers]
+crons = ["0 3 * * *"]
