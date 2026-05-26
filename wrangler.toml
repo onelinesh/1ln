@@ -4,15 +4,19 @@ compatibility_date = "2026-01-01"
 # Reserved for argon2/Node crypto interop in later batches.
 compatibility_flags = ["nodejs_compat"]
 
+routes = [
+  { pattern = "1ln.sh", custom_domain = true }
+]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "oneln"
-database_id = "00000000-0000-0000-0000-000000000001"
+database_id = "cb31aa32-3466-4685-bd80-efc8ff274fa5"
 migrations_dir = "migrations"
 
 [[kv_namespaces]]
 binding = "SCRIPT_CACHE"
-id = "00000000-0000-0000-0000-000000000002"
+id = "7c3ebe9ff3ce4643b63b93598e144fb4"
 
 [triggers]
 crons = ["0 3 * * *"]
