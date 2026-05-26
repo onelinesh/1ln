@@ -1,0 +1,22 @@
+import { Hono } from "hono";
+import type { Env } from "../env";
+import { renderHome } from "../views/home";
+import { renderResult } from "../views/result";
+import { createAnonymous } from "./api_scripts";
+
+export const home = new Hono<{ Bindings: Env }>();
+
+home.get("/", (c) => c.html(renderHome()));
+
+home.post("/", async (c) => {
+  const ip = c.req.header("cf-connecting-ip") ?? "0.0.0.0";
+  const form = await c.req.formData();
+  const result = await createAnonymous(
+    c.env,
+    ip,
+    form.get("content"),
+    form.get("visibility")
+  );
+  if (!result.ok) return c.text(result.error, result.status);
+  return c.html(renderResult({ slug: result.slug, deleteToken: result.deleteToken }));
+});

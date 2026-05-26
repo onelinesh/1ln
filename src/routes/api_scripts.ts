@@ -8,40 +8,58 @@ import {
 import { generateDeleteToken, hashToken, verifyToken } from "../tokens";
 import { checkAnonymousLimit } from "../ratelimit";
 
-const MAX_ANON_SIZE = 16 * 1024;
+export const MAX_ANON_SIZE = 16 * 1024;
+
+export type CreateResult =
+  | { ok: true; slug: string; deleteToken: string }
+  | { ok: false; status: 400 | 413 | 429; error: string };
+
+export async function createAnonymous(
+  env: Env,
+  ip: string,
+  content: unknown,
+  visibility: unknown
+): Promise<CreateResult> {
+  if (typeof content !== "string") {
+    return { ok: false, status: 400, error: "content required" };
+  }
+  if (visibility !== "public" && visibility !== "private") {
+    return { ok: false, status: 400, error: "visibility must be 'public' or 'private'" };
+  }
+  if (content.length > MAX_ANON_SIZE) {
+    return { ok: false, status: 413, error: "script too large" };
+  }
+  if (!(await checkAnonymousLimit(env.SCRIPT_CACHE, ip))) {
+    return { ok: false, status: 429, error: "rate limit exceeded" };
+  }
+  const deleteToken = generateDeleteToken();
+  const deleteTokenHash = await hashToken(deleteToken);
+  const row = await createHostedScript(env.DB, {
+    content,
+    visibility,
+    deleteTokenHash,
+  });
+  return { ok: true, slug: row.slug, deleteToken };
+}
 
 export const apiScripts = new Hono<{ Bindings: Env }>();
 
 apiScripts.post("/api/scripts", async (c) => {
   const ip = c.req.header("cf-connecting-ip") ?? "0.0.0.0";
   const body = await c.req.json().catch(() => null);
-  if (!body || typeof body.content !== "string") {
-    return c.json({ error: "content required" }, 400);
-  }
-  if (body.visibility !== "public" && body.visibility !== "private") {
-    return c.json({ error: "visibility must be 'public' or 'private'" }, 400);
-  }
-  if (body.content.length > MAX_ANON_SIZE) {
-    return c.json({ error: "script too large" }, 413);
-  }
-  if (!(await checkAnonymousLimit(c.env.SCRIPT_CACHE, ip))) {
-    return c.json({ error: "rate limit exceeded" }, 429);
-  }
-
-  const deleteToken = generateDeleteToken();
-  const deleteTokenHash = await hashToken(deleteToken);
-  const row = await createHostedScript(c.env.DB, {
-    content: body.content,
-    visibility: body.visibility,
-    deleteTokenHash,
-  });
-
+  const result = await createAnonymous(
+    c.env,
+    ip,
+    body?.content,
+    body?.visibility
+  );
+  if (!result.ok) return c.json({ error: result.error }, result.status);
   return c.json(
     {
-      slug: row.slug,
-      url: `https://1ln.sh/${row.slug}`,
-      oneliner: `curl 1ln.sh/${row.slug} | sh`,
-      delete_token: deleteToken,
+      slug: result.slug,
+      url: `https://1ln.sh/${result.slug}`,
+      oneliner: `curl 1ln.sh/${result.slug} | sh`,
+      delete_token: result.deleteToken,
     },
     201
   );
