@@ -20,3 +20,7 @@ id = "7c3ebe9ff3ce4643b63b93598e144fb4"
 
 [triggers]
 crons = ["0 3 * * *"]
+
+[assets]
+directory = "./public"
+not_found_handling = "none"
