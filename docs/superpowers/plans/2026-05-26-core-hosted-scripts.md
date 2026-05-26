@@ -80,14 +80,14 @@ Each `src/` file has one responsibility. Routes are thin — they parse, call a 
     "migrate:remote": "wrangler d1 migrations apply oneln --remote"
   },
   "dependencies": {
-    "hono": "^4.6.0"
+    "hono": "^4.12.23"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.0",
-    "@cloudflare/workers-types": "^4.20250101.0",
-    "typescript": "^5.6.0",
-    "vitest": "^2.1.0",
-    "wrangler": "^3.90.0"
+    "@cloudflare/vitest-pool-workers": "^0.16.9",
+    "@cloudflare/workers-types": "^4.20260526.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7",
+    "wrangler": "^4.94.0"
   }
 }
 ```
