@@ -10,7 +10,7 @@ describe("migration", () => {
     expect(cols).toEqual(expect.arrayContaining([
       "slug", "kind", "content", "source_url", "pinned_ref",
       "visibility", "owner_id", "delete_token_hash", "name",
-      "expires_at", "consumed_at", "created_at", "updated_at",
+      "expires_at", "consumed_at", "single_use", "created_at", "updated_at",
     ]));
   });
 });
