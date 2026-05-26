@@ -12,6 +12,7 @@ export type ScriptRow = {
   name: string | null;
   expires_at: number | null;
   consumed_at: number | null;
+  single_use: number;
   created_at: number;
   updated_at: number;
 };
@@ -22,6 +23,7 @@ export type CreateHostedInput = {
   deleteTokenHash: string | null;
   ownerId?: string | null;
   expiresAt?: number | null;
+  singleUse?: boolean;
   name?: string | null;
 };
 
@@ -40,8 +42,8 @@ export async function createHostedScript(
     try {
       await db
         .prepare(
-          `INSERT INTO scripts (slug, kind, content, visibility, owner_id, delete_token_hash, name, expires_at, created_at, updated_at)
-           VALUES (?, 'hosted', ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO scripts (slug, kind, content, visibility, owner_id, delete_token_hash, name, expires_at, single_use, created_at, updated_at)
+           VALUES (?, 'hosted', ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           slug,
@@ -51,6 +53,7 @@ export async function createHostedScript(
           input.deleteTokenHash,
           input.name ?? null,
           input.expiresAt ?? null,
+          input.singleUse ? 1 : 0,
           now,
           now
         )
@@ -80,4 +83,20 @@ export async function getScriptBySlug(
 /** Silent no-op when the slug does not exist. Callers must verify existence if they need a 404. */
 export async function deleteScript(db: D1Database, slug: string): Promise<void> {
   await db.prepare("DELETE FROM scripts WHERE slug = ?").bind(slug).run();
+}
+
+/**
+ * Atomically marks a single-use script as consumed. Returns true if we won the race
+ * (this caller is the one read), false if it was already consumed.
+ */
+export async function markConsumed(db: D1Database, slug: string): Promise<boolean> {
+  const now = Date.now();
+  const result = await db
+    .prepare(
+      `UPDATE scripts SET consumed_at = ?, updated_at = ?
+       WHERE slug = ? AND single_use = 1 AND consumed_at IS NULL`
+    )
+    .bind(now, now, slug)
+    .run();
+  return (result.meta.changes ?? 0) > 0;
 }

@@ -4,6 +4,7 @@ import {
   createHostedScript,
   getScriptBySlug,
   deleteScript,
+  markConsumed,
 } from "../src/repos/scripts";
 
 describe("scripts repo", () => {
@@ -61,5 +62,36 @@ describe("scripts repo", () => {
       });
     }
     expect(true).toBe(true);
+  });
+
+  it("createHostedScript persists singleUse=true", async () => {
+    const row = await createHostedScript(env.DB, {
+      content: "x",
+      visibility: "public",
+      deleteTokenHash: "h",
+      singleUse: true,
+    });
+    expect(row.single_use).toBe(1);
+  });
+
+  it("markConsumed wins exactly once for the same slug", async () => {
+    const row = await createHostedScript(env.DB, {
+      content: "x",
+      visibility: "public",
+      deleteTokenHash: "h",
+      singleUse: true,
+    });
+    expect(await markConsumed(env.DB, row.slug)).toBe(true);
+    expect(await markConsumed(env.DB, row.slug)).toBe(false);
+  });
+
+  it("markConsumed returns false for non-single-use scripts", async () => {
+    const row = await createHostedScript(env.DB, {
+      content: "x",
+      visibility: "public",
+      deleteTokenHash: "h",
+      singleUse: false,
+    });
+    expect(await markConsumed(env.DB, row.slug)).toBe(false);
   });
 });
