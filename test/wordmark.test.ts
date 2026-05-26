@@ -19,6 +19,7 @@ describe("wordmark", () => {
   it("renderFooter has the three documented links", () => {
     const html = renderFooter();
     expect(html).toContain("github");
+    expect(html).toContain("YairEtzion/1ln");
     expect(html).toContain("abuse");
     expect(html).toMatch(/curl-pipe-bash/i);
   });
