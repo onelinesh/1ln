@@ -13,7 +13,7 @@ raw.get("/:slug", async (c) => {
   const url = new URL(c.req.url);
   // The view/meta query flags get handled by their own routes (registered first).
   // If we got here with one of those flags it's because no specific route matched — treat as not found.
-  if (url.searchParams.has("view") || url.searchParams.has("meta")) {
+  if (url.searchParams.has("view")) {
     return c.notFound();
   }
 
