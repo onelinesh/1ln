@@ -1,6 +1,7 @@
 name = "oneln"
 main = "src/index.ts"
 compatibility_date = "2026-01-01"
+# Reserved for argon2/Node crypto interop in later batches.
 compatibility_flags = ["nodejs_compat"]
 
 [[d1_databases]]
