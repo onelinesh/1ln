@@ -67,6 +67,31 @@ pre { background: var(--surface); border: 1px solid var(--border); padding: 14px
 .sh-comment { color: var(--text-muted); font-style: italic; }
 .sh-string { color: var(--accent); }
 .sh-keyword { color: var(--text); font-weight: 700; }
+
+.paste-form textarea { width: 100%; min-height: 14rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.55; resize: vertical; }
+.paste-form textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.paste-form textarea::placeholder { color: var(--text-muted); }
+.paste-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.btn-primary, .btn-secondary { padding: 9px 16px; font-family: var(--font); font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background .12s, border-color .12s, color .12s; }
+.btn-primary { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.proxy-mention { margin-top: 36px; font-size: 13px; }
+.proxy-mention code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
+
+@media (max-width: 480px) {
+  .paste-actions .btn-primary, .paste-actions .btn-secondary { flex: 1 1 100%; }
+}
+
+.token { background: rgba(245, 166, 35, 0.06); border-color: rgba(245, 166, 35, 0.3); color: var(--accent); }
+
+.status-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.chip { display: inline-flex; align-items: center; padding: 4px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; font-size: 12px; color: var(--text); }
+.chip.muted { color: var(--text-muted); }
+.chip.accent { color: var(--accent); border-color: rgba(245, 166, 35, 0.4); background: rgba(245, 166, 35, 0.06); }
+.chip.danger { color: var(--danger); border-color: rgba(232, 93, 77, 0.4); background: rgba(232, 93, 77, 0.06); }
 `.trim();
 
 export function layout(title: string, body: string): string {

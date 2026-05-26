@@ -24,4 +24,18 @@ describe("home", () => {
     expect(html).toContain("curl 1ln.sh/");
     expect(html).toContain("Delete token");
   });
+
+  it("home includes the wordmark in the header", async () => {
+    const res = await SELF.fetch("http://x/");
+    const html = await res.text();
+    expect(html).toContain('class="wm"');
+    expect(html).toContain("1ln");
+  });
+
+  it("home links the favicon and og.png", async () => {
+    const res = await SELF.fetch("http://x/");
+    const html = await res.text();
+    expect(html).toContain('href="/favicon.svg"');
+    expect(html).toContain("https://1ln.sh/og.png");
+  });
 });
