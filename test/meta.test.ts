@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SELF } from "cloudflare:test";
+import { SELF, env } from "cloudflare:test";
 
 async function createScript(content: string) {
   const res = await SELF.fetch("http://x/api/scripts", {
@@ -32,5 +32,33 @@ describe("GET /:slug?meta", () => {
   it("returns 404 for missing slug", async () => {
     const res = await SELF.fetch("http://x/nope?meta");
     expect(res.status).toBe(404);
+  });
+
+  it("returns 410 with error=expired for an expired script", async () => {
+    const { slug } = await createScript("echo expire-meta");
+    await env.DB.prepare("UPDATE scripts SET expires_at = ? WHERE slug = ?")
+      .bind(Date.now() - 1000, slug)
+      .run();
+    const res = await SELF.fetch(`http://x/${slug}?meta`);
+    expect(res.status).toBe(410);
+    const json: any = await res.json();
+    expect(json.error).toBe("expired");
+  });
+
+  it("returns 410 with error=already consumed for a consumed 1run script", async () => {
+    const res = await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.3" },
+      body: JSON.stringify({ content: "echo 1run-meta", visibility: "public", expires: "1run" }),
+    });
+    const { slug } = (await res.json()) as { slug: string };
+    // Consume via raw.
+    const first = await SELF.fetch(`http://x/${slug}`);
+    expect(first.status).toBe(200);
+    // Now ?meta should 410.
+    const meta = await SELF.fetch(`http://x/${slug}?meta`);
+    expect(meta.status).toBe(410);
+    const json: any = await meta.json();
+    expect(json.error).toBe("already consumed");
   });
 });
