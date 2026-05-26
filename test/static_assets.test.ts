@@ -16,4 +16,13 @@ describe("static assets", () => {
     const buf = await res.arrayBuffer();
     expect(buf.byteLength).toBeGreaterThan(14_000);
   });
+
+  it("serves /favicon.svg as image/svg+xml", async () => {
+    const res = await env.ASSETS.fetch("http://x/favicon.svg");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/image\/svg/);
+    const text = await res.text();
+    expect(text).toContain("<svg");
+    expect(text).toContain("#f5a623");
+  });
 });
