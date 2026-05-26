@@ -7,6 +7,7 @@ import { meta } from "./routes/meta";
 import { view } from "./routes/view";
 import { raw } from "./routes/raw";
 import { cleanupExpired } from "./cleanup";
+import { renderNotFound } from "./views/not_found";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -22,6 +23,11 @@ app.route("/", apiScripts);
 app.route("/", meta);
 app.route("/", view);
 app.route("/", raw);
+
+app.notFound((c) => {
+  const url = new URL(c.req.url);
+  return c.html(renderNotFound(url.pathname), 404);
+});
 
 export default {
   fetch: app.fetch,
