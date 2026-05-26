@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import type { Env } from "./env";
+import { gh } from "./routes/gh";
 import { home } from "./routes/home";
 import { apiScripts } from "./routes/api_scripts";
 import { meta } from "./routes/meta";
@@ -10,6 +11,7 @@ import { cleanupExpired } from "./cleanup";
 const app = new Hono<{ Bindings: Env }>();
 
 app.get("/health", (c) => c.text("ok"));
+app.route("/", gh);
 app.route("/", home);
 app.route("/", apiScripts);
 app.route("/", meta);
