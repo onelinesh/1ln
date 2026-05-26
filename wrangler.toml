@@ -24,3 +24,4 @@ crons = ["0 3 * * *"]
 [assets]
 directory = "./public"
 not_found_handling = "none"
+binding = "ASSETS"
