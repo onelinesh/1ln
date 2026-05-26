@@ -28,7 +28,7 @@ export async function createAnonymous(
   if (visibility !== "public" && visibility !== "private") {
     return { ok: false, status: 400, error: "visibility must be 'public' or 'private'" };
   }
-  if (content.length > MAX_ANON_SIZE) {
+  if (new TextEncoder().encode(content).length > MAX_ANON_SIZE) {
     return { ok: false, status: 413, error: "script too large" };
   }
   if (!(await checkAnonymousLimit(env.SCRIPT_CACHE, ip))) {

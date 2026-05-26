@@ -1,15 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 import { publishScript, type Deps } from "./publish.js";
-
-const PublishInputSchema = z.object({
-  content: z.string().min(1).describe("The shell script to publish."),
-  visibility: z.enum(["public", "private"]).optional()
-    .describe("'private' (default) for an unguessable 22-char URL; 'public' for a short 4-char URL."),
-  expires: z.enum(["1h", "24h", "1run", "never"]).optional()
-    .describe("'24h' default. '1run' makes the URL work exactly once."),
-});
+import { PublishInputSchema, MAX_CONTENT_LENGTH } from "./schema.js";
 
 export function buildServer(deps: Deps) {
   const server = new Server(
@@ -28,7 +20,7 @@ export function buildServer(deps: Deps) {
         inputSchema: {
           type: "object",
           properties: {
-            content: { type: "string", description: "The shell script to publish." },
+            content: { type: "string", description: "The shell script to publish.", maxLength: MAX_CONTENT_LENGTH },
             visibility: { type: "string", enum: ["public", "private"], description: "Default: private" },
             expires: { type: "string", enum: ["1h", "24h", "1run", "never"], description: "Default: 24h" },
           },

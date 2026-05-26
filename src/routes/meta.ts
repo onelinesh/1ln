@@ -16,6 +16,12 @@ meta.get("/:slug", async (c, next) => {
   if (slug === "health" || slug === "api") return c.notFound();
   const row = await getScriptBySlug(c.env.DB, slug);
   if (!row) return c.notFound();
+  if (row.expires_at !== null && row.expires_at < Date.now()) {
+    return c.json({ error: "expired" }, 410);
+  }
+  if (row.single_use === 1 && row.consumed_at !== null) {
+    return c.json({ error: "already consumed" }, 410);
+  }
   const content = row.content ?? "";
   return c.json({
     content,

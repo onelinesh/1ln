@@ -37,6 +37,7 @@ describe("GET /gh/...", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/text\/plain/);
     expect(await res.text()).toBe("echo gh install");
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
   });
 
   it("default repo (no ref, no path) resolves to main/install.sh", async () => {
