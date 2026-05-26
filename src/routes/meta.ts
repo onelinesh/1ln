@@ -25,6 +25,8 @@ meta.get("/:slug", async (c, next) => {
     source: row.kind,
     pinned_ref: row.pinned_ref,
     expires_at: row.expires_at,
+    consumed_at: row.consumed_at,
+    single_use: row.single_use === 1,
     created_at: row.created_at,
   });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SELF } from "cloudflare:test";
+import { SELF, env } from "cloudflare:test";
 
 async function createScript(content: string) {
   const res = await SELF.fetch("http://x/api/scripts", {
@@ -46,5 +46,32 @@ describe("GET /:slug", () => {
     // Should now 404.
     const after = await SELF.fetch(`http://x/${created.slug}`);
     expect(after.status).toBe(404);
+  });
+
+  it("returns 410 for an expired script", async () => {
+    const c: any = await (await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.40" },
+      body: JSON.stringify({ content: "x", visibility: "public", expires: "1h" }),
+    })).json();
+    // Update expires_at to a past timestamp via env.DB.
+    await env.DB.prepare("UPDATE scripts SET expires_at = ? WHERE slug = ?")
+      .bind(Date.now() - 1000, c.slug)
+      .run();
+    const res = await SELF.fetch(`http://x/${c.slug}`);
+    expect(res.status).toBe(410);
+  });
+
+  it("1run URL: first read 200, second read 410", async () => {
+    const c: any = await (await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.41" },
+      body: JSON.stringify({ content: "once", visibility: "public", expires: "1run" }),
+    })).json();
+    const first = await SELF.fetch(`http://x/${c.slug}`);
+    expect(first.status).toBe(200);
+    expect(await first.text()).toBe("once");
+    const second = await SELF.fetch(`http://x/${c.slug}`);
+    expect(second.status).toBe(410);
   });
 });

@@ -25,6 +25,8 @@ describe("GET /:slug?meta", () => {
     expect(typeof json.expires_at).toBe("number");
     expect(json.source).toBe("hosted");
     expect(json.pinned_ref).toBeNull();
+    expect(json.consumed_at).toBeNull();
+    expect(json.single_use).toBe(false);
   });
 
   it("returns 404 for missing slug", async () => {
