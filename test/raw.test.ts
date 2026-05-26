@@ -17,6 +17,7 @@ describe("GET /:slug", () => {
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/^text\/plain/);
     expect(await res.text()).toBe("echo hello");
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
   });
 
   it("returns 404 for missing slug", async () => {

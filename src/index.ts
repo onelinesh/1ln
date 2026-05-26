@@ -10,6 +10,11 @@ import { cleanupExpired } from "./cleanup";
 
 const app = new Hono<{ Bindings: Env }>();
 
+app.use("*", async (c, next) => {
+  await next();
+  c.header("X-Content-Type-Options", "nosniff");
+});
+
 app.get("/health", (c) => c.text("ok"));
 app.route("/", gh);
 app.route("/", home);
