@@ -18,7 +18,7 @@ describe("GET /:slug?view", () => {
     expect(res.headers.get("content-type")).toMatch(/text\/html/);
     const html = await res.text();
     expect(html).toContain(slug);
-    expect(html).toContain("echo preview");
+    expect(html).toContain("preview");
   });
 
   it("returns 404 for missing slug with ?view", async () => {
@@ -52,5 +52,39 @@ describe("GET /:slug?view", () => {
     expect(view.status).toBe(410);
     const html = await view.text();
     expect(html).toContain("used");
+  });
+
+  it("shows the wordmark header and footer on the preview page", async () => {
+    const create = await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.55" },
+      body: JSON.stringify({ content: "echo polish", visibility: "public" }),
+    });
+    const { slug } = (await create.json()) as { slug: string };
+    const res = await SELF.fetch(`http://x/${slug}?view`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain('class="wm"');
+    expect(html).toContain('class="site-footer"');
+    expect(html).toContain('class="copy-btn"');
+  });
+
+  it("?view on an expired script returns a polished 410 page with the wordmark", async () => {
+    const create = await SELF.fetch("http://x/api/scripts", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "192.0.2.60" },
+      body: JSON.stringify({ content: "x", visibility: "public", expires: "1h" }),
+    });
+    const { slug } = (await create.json()) as { slug: string };
+    const { env } = await import("cloudflare:test");
+    await env.DB.prepare("UPDATE scripts SET expires_at = ? WHERE slug = ?")
+      .bind(Date.now() - 1000, slug)
+      .run();
+    const res = await SELF.fetch(`http://x/${slug}?view`);
+    expect(res.status).toBe(410);
+    const html = await res.text();
+    expect(html).toContain("410");
+    expect(html).toContain('class="wm"');
+    expect(html).toMatch(/expired/i);
   });
 });

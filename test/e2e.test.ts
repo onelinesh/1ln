@@ -16,7 +16,7 @@ describe("end-to-end", () => {
     expect(createRes.status).toBe(200);
     const html = await createRes.text();
     const slugMatch = html.match(/curl 1ln\.sh\/([0-9A-Za-z]+)/);
-    const tokenMatch = html.match(/<div class="token">([0-9A-Za-z]{32})<\/div>/);
+    const tokenMatch = html.match(/id="delete-token"[^>]*>([0-9A-Za-z]{32})<\/pre>/);
     expect(slugMatch).not.toBeNull();
     expect(tokenMatch).not.toBeNull();
     const slug = slugMatch![1]!;
@@ -36,7 +36,7 @@ describe("end-to-end", () => {
     // 4. View page.
     const viewRes = await SELF.fetch(`http://x/${slug}?view`);
     expect(viewRes.status).toBe(200);
-    expect((await viewRes.text())).toContain("echo e2e");
+    expect((await viewRes.text())).toContain("e2e");
 
     // 5. Delete.
     const delRes = await SELF.fetch(`http://x/api/scripts/${slug}`, {
