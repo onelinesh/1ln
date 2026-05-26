@@ -19,5 +19,6 @@ describe("404 handler (integration)", () => {
     const html = await res.text();
     expect(html).toContain("404");
     expect(html).toContain("this-does-not-exist-anywhere");
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
   });
 });

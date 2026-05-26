@@ -43,4 +43,20 @@ describe("highlightShell", () => {
     expect(html).toContain('<span class="sh-string">"# not a comment"</span>');
     expect(html).not.toContain('sh-comment');
   });
+
+  it("handles unterminated strings gracefully (wraps everything to EOF)", () => {
+    const html = highlightShell('echo "unclosed');
+    expect(html).toContain('<span class="sh-string">"unclosed</span>');
+  });
+
+  it("handles backslash-escaped quote inside a string", () => {
+    const html = highlightShell('echo "a\\"b"');
+    // The whole "a\"b" should be one string span
+    expect(html).toContain('<span class="sh-string">"a\\"b"</span>');
+  });
+
+  it("treats # after a word character as not-a-comment (e.g. URL fragments)", () => {
+    const html = highlightShell("curl https://example.com#anchor");
+    expect(html).not.toContain('<span class="sh-comment">#anchor</span>');
+  });
 });

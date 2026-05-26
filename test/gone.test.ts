@@ -16,7 +16,7 @@ describe("renderGone", () => {
     expect(html).toContain("2026-05-26");
   });
 
-  it("escapes the reason value (defense in depth)", () => {
+  it("rendered HTML contains no raw script tags", () => {
     // reason is a typed string union, but verify we don't directly inject anything
     const html = renderGone({ reason: "expired", at: 0 });
     expect(html).not.toContain("<script>");
