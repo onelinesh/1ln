@@ -45,30 +45,43 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .wm-text { font-weight: 700; font-size: clamp(1.4rem, 4vw, 1.75rem); letter-spacing: -0.04em; color: var(--text); }
 .wm-dot { color: var(--accent); }
 
-.site-footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.site-footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
 .site-footer .dot { color: var(--text-muted); }
 .site-footer .muted { color: var(--text-muted); }
+.site-footer-links { display: inline-flex; gap: 8px; align-items: center; }
 
 h1 { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; letter-spacing: -0.02em; margin: 0 0 8px; color: var(--text); }
 h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; margin: 28px 0 10px; color: var(--text); }
 
-.hero { margin: 8px 0 40px; }
-.hero-tagline { font-size: clamp(1.05rem, 2.4vw, 1.2rem); font-weight: 400; letter-spacing: -0.01em; margin: 0 0 20px; color: var(--text); max-width: 38em; }
-.hero-tagline code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; color: var(--accent); }
+.hero { margin: 8px 0 28px; }
+.hero-tagline { font-size: clamp(1.05rem, 2.4vw, 1.2rem); font-weight: 400; letter-spacing: -0.01em; margin: 0 0 18px; color: var(--text); max-width: 38em; }
 
-.hero-example { display: inline-flex; flex-direction: column; gap: 4px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; line-height: 1.6; }
+.hero-example { display: flex; flex-direction: column; gap: 2px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; line-height: 1.6; overflow-x: auto; }
 .hero-example-line { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
 .hero-example-prompt { color: var(--text-muted); user-select: none; }
+.hero-example-prompt.server { color: var(--accent); }
 .hero-example-cmd { color: var(--text); }
 .hero-example-arrow { color: var(--text-muted); user-select: none; }
 .hero-example-url { color: var(--accent); font-weight: 700; background: none; border: none; padding: 0; }
+.hero-example-comment { color: var(--text-muted); font-style: italic; margin-top: 10px; }
+.hero-example-comment:first-child { margin-top: 0; }
+.hero-example-out { margin: 0 0 0 18px; padding: 0; background: none; border: none; color: var(--text-secondary); font-family: var(--font); font-size: 13px; line-height: 1.6; white-space: pre; overflow: visible; border-radius: 0; }
 
-section + section { margin-top: 14px; }
-.sect-h { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; margin: 32px 0 12px; color: var(--text); display: flex; align-items: center; gap: 10px; }
-.sect-icon { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; }
-.step-label { font-size: 13px; margin: -4px 0 8px; }
+section + section { margin-top: 28px; }
+.block-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 12px; }
+.code-label { font-size: 12px; color: var(--text-secondary); margin: 0 0 6px; }
+.code-label code { background: var(--surface); border: 1px solid var(--border); padding: 0 4px; border-radius: 3px; font-size: 11px; color: var(--text-secondary); }
 
-.try-link { margin: 40px 0 0; font-size: 13px; }
+.mcp-details { margin-top: 4px; }
+.mcp-details > summary { font-size: 12px; color: var(--text-secondary); cursor: pointer; padding: 4px 0; list-style: none; user-select: none; }
+.mcp-details > summary::-webkit-details-marker { display: none; }
+.mcp-details > summary::before { content: "▸ "; color: var(--text-muted); }
+.mcp-details[open] > summary::before { content: "▾ "; }
+.mcp-details > summary:hover { color: var(--text); }
+.mcp-details[open] > summary { margin-bottom: 8px; color: var(--text); }
+.mcp-details .code-row pre { white-space: pre; }
+
+.try-link { margin: 32px 0 0; font-size: 13px; }
 .try-link a { color: var(--text-secondary); }
 .try-link a:hover { color: var(--accent); }
 

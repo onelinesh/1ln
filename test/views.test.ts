@@ -8,7 +8,7 @@ describe("views", () => {
   it("renderHome does not include the paste form (moved to /try)", () => {
     const html = renderHome();
     expect(html).not.toContain("<textarea");
-    expect(html).not.toContain("<details");
+    expect(html).not.toContain('name="content"');
   });
 
   it("renderHome links to /try as a small bottom link", () => {
@@ -33,8 +33,8 @@ describe("views", () => {
 
   it("renderHome shows the one-line hero tagline", () => {
     const html = renderHome();
-    expect(html).toMatch(/paste a (shell )?script/i);
-    expect(html).toMatch(/curl/i);
+    expect(html).toMatch(/(push|paste) a shell script/i);
+    expect(html).toMatch(/url/i);
   });
 
   it("renderHome leads with the CLI install command", () => {
@@ -77,8 +77,9 @@ describe("views", () => {
   it("renderHome has copy buttons on the install commands", () => {
     const html = renderHome();
     expect(html).toContain('data-copy-target="install-cmd"');
-    expect(html).toContain('data-copy-target="push-cmd"');
-    expect(html).toContain('data-copy-target="mcp-cmd"');
+    expect(html).toContain('data-copy-target="mcp-claude-code"');
+    expect(html).toContain('data-copy-target="mcp-stdio"');
+    expect(html).toContain('data-copy-target="mcp-desktop"');
   });
 
   it("renderHome no longer embeds a large hero logo image (mark moved to header)", () => {
