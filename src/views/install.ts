@@ -1,11 +1,16 @@
-export const LATEST_TAG = "v0.1.0";
+export const LATEST_TAG = "cli-v0.1.0";
 
 const TEMPLATE = `#!/bin/sh
 # 1ln CLI installer — https://1ln.sh
 # Pin a specific version with: ONELN_VERSION=v0.1.0 curl 1ln.sh/install | sh
 set -eu
 
-VERSION="\${ONELN_VERSION:-__LATEST_TAG__}"
+RAW="\${ONELN_VERSION:-__LATEST_TAG__}"
+case "$RAW" in
+  cli-*) TAG="$RAW" ;;
+  *) TAG="cli-$RAW" ;;
+esac
+VERSION="\${TAG#cli-}"
 
 case "$(uname -s)" in
   Darwin) OS=darwin ;;
@@ -23,7 +28,7 @@ PREFIX="\${PREFIX:-/usr/local}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-URL="https://github.com/onelinesh/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
+URL="https://github.com/onelinesh/1ln/releases/download/$TAG/1ln-$OS-$ARCH.tar.gz"
 echo "downloading 1ln $VERSION for $OS/$ARCH"
 curl -fsSL "$URL" -o "$TMP/1ln.tar.gz"
 tar -xzf "$TMP/1ln.tar.gz" -C "$TMP"

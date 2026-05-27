@@ -13,8 +13,15 @@ describe("renderInstall (unit)", () => {
 
   it("embeds the pinned LATEST_TAG and allows ONELN_VERSION override", () => {
     const script = renderInstall();
-    expect(LATEST_TAG).toMatch(/^v\d+\.\d+\.\d+$/);
-    expect(script).toContain(`VERSION="\${ONELN_VERSION:-${LATEST_TAG}}"`);
+    expect(LATEST_TAG).toMatch(/^cli-v\d+\.\d+\.\d+$/);
+    expect(script).toContain(`RAW="\${ONELN_VERSION:-${LATEST_TAG}}"`);
+  });
+
+  it("accepts ONELN_VERSION with or without the cli- prefix", () => {
+    const script = renderInstall();
+    expect(script).toContain('cli-*) TAG="$RAW" ;;');
+    expect(script).toContain('*) TAG="cli-$RAW" ;;');
+    expect(script).toContain('VERSION="${TAG#cli-}"');
   });
 
   it("detects OS and arch from uname", () => {
@@ -27,9 +34,9 @@ describe("renderInstall (unit)", () => {
     expect(script).toContain("arm64|aarch64) ARCH=arm64");
   });
 
-  it("downloads from the onelinesh/1ln GitHub release", () => {
+  it("downloads from the onelinesh/1ln GitHub release using the cli- tag", () => {
     expect(renderInstall()).toContain(
-      "https://github.com/onelinesh/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
+      "https://github.com/onelinesh/1ln/releases/download/$TAG/1ln-$OS-$ARCH.tar.gz"
     );
   });
 
