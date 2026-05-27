@@ -11,8 +11,13 @@ export default defineConfig(async () => {
       cloudflareTest({
         wrangler: { configPath: "./wrangler.toml" },
         miniflare: {
-          // Expose migrations as a test-only binding for the setup file
-          bindings: { TEST_MIGRATIONS: migrations },
+          // Expose migrations as a test-only binding for the setup file.
+          // SCRIPT_HMAC_SECRET is bound here so the tamper-detection helpers
+          // have a deterministic, non-empty key under test (never used in prod).
+          bindings: {
+            TEST_MIGRATIONS: migrations,
+            SCRIPT_HMAC_SECRET: "test-hmac-secret-do-not-use-in-prod",
+          },
         },
       }),
     ],

@@ -13,6 +13,7 @@ describe("scripts repo", () => {
       content: "echo hi",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
     });
     expect(row.slug).toMatch(/^[0-9A-Za-z]{4,6}$/);
     expect(row.kind).toBe("hosted");
@@ -25,6 +26,7 @@ describe("scripts repo", () => {
       content: "echo secret",
       visibility: "private",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
     });
     expect(row.slug.length).toBe(22);
   });
@@ -34,6 +36,7 @@ describe("scripts repo", () => {
       content: "echo find-me",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
     });
     const found = await getScriptBySlug(env.DB, row.slug);
     expect(found?.content).toBe("echo find-me");
@@ -48,6 +51,7 @@ describe("scripts repo", () => {
       content: "echo bye",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
     });
     await deleteScript(env.DB, row.slug);
     expect(await getScriptBySlug(env.DB, row.slug)).toBeNull();
@@ -59,6 +63,7 @@ describe("scripts repo", () => {
         content: `s${i}`,
         visibility: "public",
         deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       });
     }
     expect(true).toBe(true);
@@ -69,6 +74,7 @@ describe("scripts repo", () => {
       content: "x",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       singleUse: true,
     });
     expect(row.single_use).toBe(1);
@@ -79,6 +85,7 @@ describe("scripts repo", () => {
       content: "x",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       singleUse: true,
     });
     expect(await markConsumed(env.DB, row.slug)).toBe(true);
@@ -90,6 +97,7 @@ describe("scripts repo", () => {
       content: "x",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       singleUse: false,
     });
     expect(await markConsumed(env.DB, row.slug)).toBe(false);

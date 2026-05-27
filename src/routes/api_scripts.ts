@@ -51,6 +51,7 @@ export async function createAnonymous(
     content,
     visibility,
     deleteTokenHash,
+    hmacSecret: env.SCRIPT_HMAC_SECRET,
     expiresAt: parsed.expiresAt,
     singleUse: parsed.singleUse,
   });

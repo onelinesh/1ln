@@ -9,6 +9,7 @@ describe("cleanupExpired", () => {
       content: "old",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       expiresAt: Date.now() - 1000,
     });
     await cleanupExpired(env.DB);
@@ -20,6 +21,7 @@ describe("cleanupExpired", () => {
       content: "new",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       expiresAt: Date.now() + 60_000,
     });
     await cleanupExpired(env.DB);
@@ -31,6 +33,7 @@ describe("cleanupExpired", () => {
       content: "forever",
       visibility: "public",
       deleteTokenHash: "h",
+      hmacSecret: env.SCRIPT_HMAC_SECRET,
       expiresAt: null,
     });
     await cleanupExpired(env.DB);

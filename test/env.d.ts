@@ -5,6 +5,7 @@ declare namespace Cloudflare {
     DB: D1Database;
     SCRIPT_CACHE: KVNamespace;
     ASSETS: Fetcher;
+    SCRIPT_HMAC_SECRET: string;
     TEST_MIGRATIONS: import("cloudflare:test").D1Migration[];
   }
 }

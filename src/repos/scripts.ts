@@ -1,4 +1,5 @@
 import { generatePublicSlug, generatePrivateSlug } from "../slug";
+import { computeContentHmac } from "../integrity";
 
 export type ScriptRow = {
   slug: string;
@@ -13,6 +14,7 @@ export type ScriptRow = {
   expires_at: number | null;
   consumed_at: number | null;
   single_use: number;
+  content_hmac: string | null;
   created_at: number;
   updated_at: number;
 };
@@ -21,6 +23,11 @@ export type CreateHostedInput = {
   content: string;
   visibility: "public" | "private";
   deleteTokenHash: string | null;
+  /**
+   * Worker-only secret used to HMAC the stored content for tamper detection.
+   * Required for `createHostedScript` so new rows always have content_hmac set.
+   */
+  hmacSecret: string;
   ownerId?: string | null;
   expiresAt?: number | null;
   singleUse?: boolean;
@@ -39,11 +46,18 @@ export async function createHostedScript(
       input.visibility === "public"
         ? generatePublicSlug()
         : generatePrivateSlug();
+    // Bind hmac to the exact slug we're about to persist; if INSERT fails on
+    // UNIQUE collision we'll regenerate slug AND hmac on the next attempt.
+    const contentHmac = await computeContentHmac(
+      input.hmacSecret,
+      slug,
+      input.content
+    );
     try {
       await db
         .prepare(
-          `INSERT INTO scripts (slug, kind, content, visibility, owner_id, delete_token_hash, name, expires_at, single_use, created_at, updated_at)
-           VALUES (?, 'hosted', ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO scripts (slug, kind, content, visibility, owner_id, delete_token_hash, name, expires_at, single_use, content_hmac, created_at, updated_at)
+           VALUES (?, 'hosted', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
         .bind(
           slug,
@@ -54,6 +68,7 @@ export async function createHostedScript(
           input.name ?? null,
           input.expiresAt ?? null,
           input.singleUse ? 1 : 0,
+          contentHmac,
           now,
           now
         )
