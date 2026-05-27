@@ -2,11 +2,22 @@ import { describe, it, expect } from "vitest";
 import { SELF } from "cloudflare:test";
 
 describe("home", () => {
-  it("GET / returns the paste form", async () => {
+  it("GET / returns the docs-first homepage with a link to /try", async () => {
     const res = await SELF.fetch("http://x/");
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/text\/html/);
-    expect(await res.text()).toContain('name="content"');
+    const html = await res.text();
+    expect(html).toContain('href="/try"');
+    expect(html).not.toContain('name="content"');
+  });
+
+  it("GET /try returns the paste form", async () => {
+    const res = await SELF.fetch("http://x/try");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toMatch(/text\/html/);
+    const html = await res.text();
+    expect(html).toContain('name="content"');
+    expect(html).toContain('action="/"');
   });
 
   it("POST / form-submit creates a script and shows the result page", async () => {
