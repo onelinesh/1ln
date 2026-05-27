@@ -1,5 +1,5 @@
 export function renderWordmark(): string {
-  return `<a class="wm" href="/" aria-label="1ln.sh home"><span>1ln</span><span class="wm-dot">.sh</span></a>`;
+  return `<a class="wm" href="/" aria-label="1ln.sh home"><img class="wm-logo" src="/logo.svg" alt="" /><span class="wm-text">1ln<span class="wm-dot">.sh</span></span></a>`;
 }
 
 export function renderHeader(): string {
@@ -11,6 +11,8 @@ export function renderFooter(): string {
   <span class="muted">1ln.sh — curl-pipe-bash, but with a URL bar.</span>
   <span class="dot">·</span>
   <a href="https://github.com/onelinesh/1ln" rel="noopener" target="_blank">github</a>
+  <span class="dot">·</span>
+  <a href="https://www.npmjs.com/package/1ln-mcp" rel="noopener" target="_blank">npm</a>
   <span class="dot">·</span>
   <a href="mailto:abuse@1ln.sh">abuse</a>
 </footer>`;

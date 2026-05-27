@@ -1,12 +1,15 @@
 import { Hono } from "hono";
 import type { Env } from "../env";
 import { renderHome } from "../views/home";
+import { renderTry } from "../views/try";
 import { renderResult } from "../views/result";
 import { createAnonymous } from "./api_scripts";
 
 export const home = new Hono<{ Bindings: Env }>();
 
 home.get("/", (c) => c.html(renderHome()));
+
+home.get("/try", (c) => c.html(renderTry()));
 
 home.post("/", async (c) => {
   const ip = c.req.header("cf-connecting-ip") ?? "0.0.0.0";

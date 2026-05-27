@@ -1,27 +1,39 @@
 import { describe, it, expect } from "vitest";
 import { renderHome } from "../src/views/home";
+import { renderTry } from "../src/views/try";
 import { renderResult } from "../src/views/result";
 import { renderPreview } from "../src/views/preview";
 
 describe("views", () => {
-  it("renderHome contains a textarea and two submit buttons (in a disclosure)", () => {
+  it("renderHome does not include the paste form (moved to /try)", () => {
     const html = renderHome();
+    expect(html).not.toContain("<textarea");
+    expect(html).not.toContain("<details");
+  });
+
+  it("renderHome links to /try as a small bottom link", () => {
+    const html = renderHome();
+    expect(html).toContain('href="/try"');
+    expect(html).toMatch(/try it in the browser/i);
+  });
+
+  it("renderTry contains the paste form and submit buttons", () => {
+    const html = renderTry();
     expect(html).toContain("<textarea");
     expect(html).toContain('name="content"');
     expect(html).toContain("Create public link");
     expect(html).toContain("Create private link");
+    expect(html).toContain('action="/"');
   });
 
-  it("renderHome hides the paste form behind a <details> disclosure", () => {
-    const html = renderHome();
-    expect(html).toContain("<details");
-    expect(html).toContain("<summary");
-    expect(html).toMatch(/Try it in the browser/i);
+  it("renderTry includes a back link to the homepage", () => {
+    const html = renderTry();
+    expect(html).toMatch(/href="\/"/);
   });
 
   it("renderHome shows the one-line hero tagline", () => {
     const html = renderHome();
-    expect(html).toMatch(/paste a script/i);
+    expect(html).toMatch(/paste a (shell )?script/i);
     expect(html).toMatch(/curl/i);
   });
 
@@ -43,12 +55,17 @@ describe("views", () => {
     expect(html).toContain("https://www.npmjs.com/package/1ln-mcp");
   });
 
-  it("renderHome mentions the GitHub proxy as a feature, not a hero CTA", () => {
+  it("renderHome does not mention the /gh/ proxy anywhere on the landing page", () => {
     const html = renderHome();
-    expect(html).toContain('class="features"');
-    expect(html).toMatch(/GitHub script proxy/i);
-    expect(html).not.toMatch(/<h1[^>]*>[^<]*gh\//i);
-    expect(html).not.toMatch(/<h2[^>]*>[\s\S]{0,120}1ln\.sh\/gh\//i);
+    expect(html).not.toContain("1ln.sh/gh/");
+    expect(html).not.toMatch(/github (script )?proxy/i);
+  });
+
+  it("renderHome does not include the legacy features list", () => {
+    const html = renderHome();
+    expect(html).not.toContain('class="features"');
+    expect(html).not.toMatch(/expiring urls/i);
+    expect(html).not.toMatch(/single-use/i);
   });
 
   it("renderHome shows an example curl URL in the hero", () => {
@@ -64,9 +81,16 @@ describe("views", () => {
     expect(html).toContain('data-copy-target="mcp-cmd"');
   });
 
-  it("renderHome shows the bar+dot logo mark in the hero", () => {
+  it("renderHome no longer embeds a large hero logo image (mark moved to header)", () => {
     const html = renderHome();
-    expect(html).toMatch(/<img[^>]*src="\/favicon\.svg"[^>]*class="hero-mark"/);
+    expect(html).not.toMatch(/<img[^>]*class="hero-mark"/);
+  });
+
+  it("renderHeader shows the logo.svg next to the 1ln.sh text", () => {
+    const html = renderHome();
+    expect(html).toMatch(/<img[^>]*class="wm-logo"[^>]*src="\/logo\.svg"/);
+    expect(html).toContain('aria-label="1ln.sh home"');
+    expect(html).toContain('class="wm-text"');
   });
 
   it("renderResult shows the one-liner and the delete token", () => {
