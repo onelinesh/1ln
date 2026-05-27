@@ -41,6 +41,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .site-footer .dot { color: var(--text-muted); }
 .site-footer .muted { color: var(--text-muted); }
 
+.hero-mark { margin: 0 0 14px; line-height: 0; }
 h1 { font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; letter-spacing: -0.02em; margin: 0 0 8px; color: var(--text); }
 h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; margin: 28px 0 10px; color: var(--text); }
 p { margin: 0 0 12px; }
