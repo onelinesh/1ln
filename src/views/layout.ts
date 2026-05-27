@@ -17,8 +17,14 @@ const META = `
 <meta property="og:url" content="https://1ln.sh">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0d0d0d">
+<meta name="application-name" content="1ln">
+<meta name="apple-mobile-web-app-title" content="1ln">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="alternate icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="manifest" href="/manifest.webmanifest">
 `.trim();
 
 const STYLES = `
