@@ -23,7 +23,7 @@ PREFIX="\${PREFIX:-/usr/local}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-URL="https://github.com/YairEtzion/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
+URL="https://github.com/onelinesh/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
 echo "downloading 1ln $VERSION for $OS/$ARCH"
 curl -fsSL "$URL" -o "$TMP/1ln.tar.gz"
 tar -xzf "$TMP/1ln.tar.gz" -C "$TMP"

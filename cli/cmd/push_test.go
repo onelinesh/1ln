@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/YairEtzion/1ln/cli/internal/store"
+	"github.com/onelinesh/1ln/cli/internal/store"
 )
 
 func TestPush_ReadsFileAndPostsAndCachesToken(t *testing.T) {

@@ -27,9 +27,9 @@ describe("renderInstall (unit)", () => {
     expect(script).toContain("arm64|aarch64) ARCH=arm64");
   });
 
-  it("downloads from the YairEtzion/1ln GitHub release", () => {
+  it("downloads from the onelinesh/1ln GitHub release", () => {
     expect(renderInstall()).toContain(
-      "https://github.com/YairEtzion/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
+      "https://github.com/onelinesh/1ln/releases/download/$VERSION/1ln-$OS-$ARCH.tar.gz"
     );
   });
 

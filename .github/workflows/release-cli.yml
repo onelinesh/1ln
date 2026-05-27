@@ -36,7 +36,7 @@ jobs:
           mkdir -p out
           go build \
             -trimpath \
-            -ldflags "-s -w -X github.com/YairEtzion/1ln/cli/cmd.Version=$VERSION" \
+            -ldflags "-s -w -X github.com/onelinesh/1ln/cli/cmd.Version=$VERSION" \
             -o out/1ln .
           tar -czvf "out/1ln-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz" -C out 1ln
           rm out/1ln

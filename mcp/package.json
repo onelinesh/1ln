@@ -34,7 +34,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YairEtzion/1ln.git",
+    "url": "git+https://github.com/onelinesh/1ln.git",
     "directory": "mcp"
   },
   "license": "MIT"

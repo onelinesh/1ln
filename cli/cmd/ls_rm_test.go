@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/YairEtzion/1ln/cli/internal/store"
+	"github.com/onelinesh/1ln/cli/internal/store"
 )
 
 func seedStore(t *testing.T, entries []store.Entry) string {

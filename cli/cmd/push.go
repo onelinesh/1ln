@@ -8,9 +8,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/YairEtzion/1ln/cli/internal/api"
-	"github.com/YairEtzion/1ln/cli/internal/config"
-	"github.com/YairEtzion/1ln/cli/internal/store"
+	"github.com/onelinesh/1ln/cli/internal/api"
+	"github.com/onelinesh/1ln/cli/internal/config"
+	"github.com/onelinesh/1ln/cli/internal/store"
 )
 
 func runPush(args []string) error {

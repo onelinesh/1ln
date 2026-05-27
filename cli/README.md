@@ -17,7 +17,7 @@ ONELN_VERSION=v0.1.0 curl 1ln.sh/install | sh
 Or build from source:
 
 ```sh
-go install github.com/YairEtzion/1ln/cli@latest
+go install github.com/onelinesh/1ln/cli@latest
 # binary lands in $(go env GOPATH)/bin, rename to `1ln` if needed
 ```
 

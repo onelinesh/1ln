@@ -2,7 +2,7 @@ package cmd
 
 import "fmt"
 
-// Version is set via -ldflags "-X github.com/YairEtzion/1ln/cli/cmd.Version=vX.Y.Z" at build time.
+// Version is set via -ldflags "-X github.com/onelinesh/1ln/cli/cmd.Version=vX.Y.Z" at build time.
 var Version = "dev"
 
 func runVersion() error {

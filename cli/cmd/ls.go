@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/YairEtzion/1ln/cli/internal/store"
+	"github.com/onelinesh/1ln/cli/internal/store"
 )
 
 func runLs(_ []string) error {
