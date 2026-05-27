@@ -49,10 +49,10 @@ describe("views", () => {
     expect(html).toContain("1ln-mcp");
   });
 
-  it("renderHome links to github and npm", () => {
+  it("renderHome links to npm but not github", () => {
     const html = renderHome();
-    expect(html).toContain("https://github.com/onelinesh/1ln");
     expect(html).toContain("https://www.npmjs.com/package/1ln-mcp");
+    expect(html).not.toContain("github.com");
   });
 
   it("renderHome does not mention the /gh/ proxy anywhere on the landing page", () => {

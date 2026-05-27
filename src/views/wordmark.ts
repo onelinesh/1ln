@@ -10,8 +10,6 @@ export function renderFooter(): string {
   return `<footer class="site-footer">
   <span class="muted">1ln.sh — curl-pipe-bash, but with a URL bar.</span>
   <span class="site-footer-links">
-    <a href="https://github.com/onelinesh/1ln" rel="noopener" target="_blank">github</a>
-    <span class="dot">·</span>
     <a href="https://www.npmjs.com/package/1ln-mcp" rel="noopener" target="_blank">npm</a>
     <span class="dot">·</span>
     <a href="mailto:abuse@1ln.sh">abuse</a>

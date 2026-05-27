@@ -19,11 +19,12 @@ describe("wordmark", () => {
     expect(html).toContain('class="wm"');
   });
 
-  it("renderFooter has the three documented links", () => {
+  it("renderFooter has the documented links and tagline", () => {
     const html = renderFooter();
-    expect(html).toContain("github");
-    expect(html).toContain("onelinesh/1ln");
+    expect(html).toContain("npm");
+    expect(html).toContain("1ln-mcp");
     expect(html).toContain("abuse");
     expect(html).toMatch(/curl-pipe-bash/i);
+    expect(html).not.toContain("github.com");
   });
 });
