@@ -97,8 +97,7 @@ scripts
 
 users
   id              uuid  primary key
-  github_id       text  unique
-  email           text
+  github_id       text  unique           -- numeric GitHub user id only (e.g. "12345"); not username
   created_at      timestamptz not null
 
 api_tokens
@@ -112,6 +111,12 @@ api_tokens
 
 That's it for MVP. No versions table, no runs table, no per-server tokens.
 
+### Data minimization (locked)
+
+- **No email, no username, no avatar.** Plan 2 stores only the numeric GitHub user id. Username can be re-fetched from GitHub on demand if ever needed for display; do not persist it.
+- **No IPs in D1.** Request IPs only appear in transient KV rate-limit keys.
+- This is a hard constraint on Plan 2 — do not relax it for convenience features.
+
 ### Mutation policy
 
 - **Hosted private**: mutable by owner. This is the fleet use case — fix a bug, re-run `curl` on each box, no new URL.
@@ -122,8 +127,8 @@ That's it for MVP. No versions table, no runs table, no per-server tokens.
 ## Auth & access control
 
 - **Anonymous upload**: paste → get URL + delete token (shown once, then argon2-hashed in DB). No account. Lose the token = the script lives until TTL GC.
-- **Owned upload**: GitHub OAuth → script attached to `owner_id`. Editable (if private), listable, deletable from dashboard. No TTL.
-- **API**: bearer tokens scoped to a user; same capabilities as owner.
+- **Owned upload**: GitHub OAuth → script attached to `owner_id`. Editable (if private), listable, deletable via the `1ln` CLI (`1ln login`/`ls`/`rm`/`edit`/`rename`). **No web dashboard** — owner management is CLI-only (see [[1ln-no-ui-decision]]).
+- **API / CLI bearer tokens**: scoped to one user. The server enforces ownership on every mutation — a token can only read/edit/delete scripts whose `owner_id` matches the token's user. No admin scope, no list-all, no edit-by-slug bypass. The CLI is an HTTP client with no privileged trust; a stolen token only exposes that user's scripts.
 - **Capability URL model**: for private hosted scripts, the URL slug itself is the only secret. No additional token or header required. Revocation = delete the script.
 
 ## GitHub proxy
