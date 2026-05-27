@@ -43,9 +43,30 @@ describe("views", () => {
     expect(html).toContain("https://www.npmjs.com/package/1ln-mcp");
   });
 
-  it("renderHome no longer promotes the /gh/ proxy on the landing page", () => {
+  it("renderHome mentions the GitHub proxy as a feature, not a hero CTA", () => {
     const html = renderHome();
-    expect(html).not.toContain("1ln.sh/gh/");
+    expect(html).toContain('class="features"');
+    expect(html).toMatch(/GitHub script proxy/i);
+    expect(html).not.toMatch(/<h1[^>]*>[^<]*gh\//i);
+    expect(html).not.toMatch(/<h2[^>]*>[\s\S]{0,120}1ln\.sh\/gh\//i);
+  });
+
+  it("renderHome shows an example curl URL in the hero", () => {
+    const html = renderHome();
+    expect(html).toContain('class="hero-example"');
+    expect(html).toMatch(/curl 1ln\.sh\/\S+ \| sh/);
+  });
+
+  it("renderHome has copy buttons on the install commands", () => {
+    const html = renderHome();
+    expect(html).toContain('data-copy-target="install-cmd"');
+    expect(html).toContain('data-copy-target="push-cmd"');
+    expect(html).toContain('data-copy-target="mcp-cmd"');
+  });
+
+  it("renderHome shows the bar+dot logo mark in the hero", () => {
+    const html = renderHome();
+    expect(html).toMatch(/<img[^>]*src="\/favicon\.svg"[^>]*class="hero-mark"/);
   });
 
   it("renderResult shows the one-liner and the delete token", () => {
