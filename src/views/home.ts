@@ -7,7 +7,6 @@ const ICON_TERMINAL = `<svg class="sect-icon" viewBox="0 0 24 24" fill="none" st
 const ICON_EXTENSION = `<svg class="sect-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.5a2 2 0 1 0-4 0V6H6a1.5 1.5 0 0 0-1.5 1.5V11h1.25a2 2 0 1 1 0 4H4.5v3.5A1.5 1.5 0 0 0 6 20h3.5v-1.25a2 2 0 1 1 4 0V20H17a1.5 1.5 0 0 0 1.5-1.5V15H20a2 2 0 1 0 0-4h-1.5V7.5A1.5 1.5 0 0 0 17 6h-3V4.5Z"/></svg>`;
 const ICON_SCHEDULE = `<svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>`;
 const ICON_BOLT = `<svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 3 4 14 11 14 10 21 19 9 13 9 13 3"/></svg>`;
-const ICON_CODE = `<svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="8 7 3 12 8 17"/><polyline points="16 7 21 12 16 17"/><line x1="14" y1="5" x2="10" y2="19"/></svg>`;
 
 export function renderHome(): string {
   return layout(
@@ -52,7 +51,6 @@ export function renderHome(): string {
 <ul class="features" aria-label="More features">
   <li>${ICON_SCHEDULE}<span>Expiring URLs (1h, 24h, never)</span></li>
   <li>${ICON_BOLT}<span>Single-use links</span></li>
-  <li>${ICON_CODE}<span>GitHub script proxy &mdash; <code>curl 1ln.sh/gh/&lt;user&gt;/&lt;repo&gt; | sh</code></span></li>
 </ul>
 
 <details class="browser-try">

@@ -43,12 +43,17 @@ describe("views", () => {
     expect(html).toContain("https://www.npmjs.com/package/1ln-mcp");
   });
 
-  it("renderHome mentions the GitHub proxy as a feature, not a hero CTA", () => {
+  it("renderHome does not mention the /gh/ proxy anywhere on the landing page", () => {
+    const html = renderHome();
+    expect(html).not.toContain("1ln.sh/gh/");
+    expect(html).not.toMatch(/github (script )?proxy/i);
+  });
+
+  it("renderHome features list highlights expiring + single-use links", () => {
     const html = renderHome();
     expect(html).toContain('class="features"');
-    expect(html).toMatch(/GitHub script proxy/i);
-    expect(html).not.toMatch(/<h1[^>]*>[^<]*gh\//i);
-    expect(html).not.toMatch(/<h2[^>]*>[\s\S]{0,120}1ln\.sh\/gh\//i);
+    expect(html).toMatch(/expiring urls/i);
+    expect(html).toMatch(/single-use/i);
   });
 
   it("renderHome shows an example curl URL in the hero", () => {
