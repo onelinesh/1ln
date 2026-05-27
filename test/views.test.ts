@@ -86,9 +86,10 @@ describe("views", () => {
     expect(html).not.toMatch(/<img[^>]*class="hero-mark"/);
   });
 
-  it("renderHeader integrates the bar+dot mark inline with the wordmark", () => {
+  it("renderHeader shows the logo.svg next to the 1ln.sh text", () => {
     const html = renderHome();
-    expect(html).toMatch(/<svg[^>]*class="wm-mark"/);
+    expect(html).toMatch(/<img[^>]*class="wm-logo"[^>]*src="\/logo\.svg"/);
+    expect(html).toContain('aria-label="1ln.sh home"');
     expect(html).toContain('class="wm-text"');
   });
 

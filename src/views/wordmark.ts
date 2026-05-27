@@ -1,10 +1,5 @@
-const HEADER_MARK = `<svg class="wm-mark" viewBox="0 0 64 64" width="26" height="26" fill="none" aria-hidden="true">
-  <rect x="12" y="30.5" width="30" height="3" fill="#e8e1d8"/>
-  <circle cx="48" cy="32" r="5" fill="#f5a623"/>
-</svg>`;
-
 export function renderWordmark(): string {
-  return `<a class="wm" href="/" aria-label="1ln.sh home">${HEADER_MARK}<span class="wm-text">1ln</span><span class="wm-dot">.sh</span></a>`;
+  return `<a class="wm" href="/" aria-label="1ln.sh home"><img class="wm-logo" src="/logo.svg" alt="" /><span class="wm-text">1ln<span class="wm-dot">.sh</span></span></a>`;
 }
 
 export function renderHeader(): string {

@@ -39,11 +39,11 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .wrap { max-width: min(760px, 100vw - 32px); margin: 0 auto; padding: 28px 16px 48px; }
 
 .site-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-.wm { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: clamp(1.4rem, 4vw, 1.75rem); letter-spacing: -0.04em; color: var(--text); }
-.wm:hover { color: var(--text); text-decoration: none; }
-.wm-mark { flex-shrink: 0; }
-.wm-text { line-height: 1; }
-.wm-dot { color: var(--accent); line-height: 1; }
+.wm { display: inline-flex; align-items: center; gap: 12px; line-height: 1; }
+.wm:hover { text-decoration: none; }
+.wm-logo { display: block; height: clamp(26px, 4vw, 32px); width: auto; flex-shrink: 0; }
+.wm-text { font-weight: 700; font-size: clamp(1.4rem, 4vw, 1.75rem); letter-spacing: -0.04em; color: var(--text); }
+.wm-dot { color: var(--accent); }
 
 .site-footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .site-footer .dot { color: var(--text-muted); }
