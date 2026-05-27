@@ -21,3 +21,10 @@ npm-debug.log*
 # Go CLI build outputs
 cli/1ln
 cli/out/
+
+# Playwright MCP scratch — browser snapshots, console logs, ad-hoc screenshots
+.playwright-mcp/
+audit-*.png
+ui-review-*.png
+ui-v*-desktop*.png
+ui-v*-mobile*.png
