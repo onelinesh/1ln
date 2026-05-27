@@ -5,6 +5,7 @@ import { home } from "./routes/home";
 import { apiScripts } from "./routes/api_scripts";
 import { meta } from "./routes/meta";
 import { view } from "./routes/view";
+import { install } from "./routes/install";
 import { raw } from "./routes/raw";
 import { cleanupExpired } from "./cleanup";
 import { renderNotFound } from "./views/not_found";
@@ -22,6 +23,7 @@ app.route("/", home);
 app.route("/", apiScripts);
 app.route("/", meta);
 app.route("/", view);
+app.route("/", install);
 app.route("/", raw);
 
 app.notFound((c) => {
