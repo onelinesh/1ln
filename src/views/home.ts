@@ -42,12 +42,6 @@ export function renderHome(): string {
   </div>
 </section>
 
-<p class="home-links">
-  <a href="https://github.com/onelinesh/1ln" rel="noopener" target="_blank">github</a>
-  <span class="dot secondary">&middot;</span>
-  <a href="https://www.npmjs.com/package/1ln-mcp" rel="noopener" target="_blank">npm</a>
-</p>
-
 <ul class="features" aria-label="More features">
   <li>${ICON_SCHEDULE}<span>Expiring URLs (1h, 24h, never)</span></li>
   <li>${ICON_BOLT}<span>Single-use links</span></li>

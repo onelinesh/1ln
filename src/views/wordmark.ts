@@ -12,6 +12,8 @@ export function renderFooter(): string {
   <span class="dot">·</span>
   <a href="https://github.com/onelinesh/1ln" rel="noopener" target="_blank">github</a>
   <span class="dot">·</span>
+  <a href="https://www.npmjs.com/package/1ln-mcp" rel="noopener" target="_blank">npm</a>
+  <span class="dot">·</span>
   <a href="mailto:abuse@1ln.sh">abuse</a>
 </footer>`;
 }
