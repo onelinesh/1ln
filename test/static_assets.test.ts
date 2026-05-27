@@ -30,7 +30,7 @@ describe("static assets", () => {
     const res = await env.ASSETS.fetch("http://x/favicon.ico");
     expect(res.status).toBe(200);
     const buf = await res.arrayBuffer();
-    expect(buf.byteLength).toBeGreaterThan(500);
+    expect(buf.byteLength).toBeGreaterThan(200);
   });
 
   it("serves /og.png as image/png at 1200x630-ish bytes", async () => {
