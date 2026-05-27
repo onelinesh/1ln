@@ -4,7 +4,7 @@ import { renderResult } from "../src/views/result";
 import { renderPreview } from "../src/views/preview";
 
 describe("views", () => {
-  it("renderHome contains a textarea and two submit buttons", () => {
+  it("renderHome contains a textarea and two submit buttons (in a disclosure)", () => {
     const html = renderHome();
     expect(html).toContain("<textarea");
     expect(html).toContain('name="content"');
@@ -12,15 +12,40 @@ describe("views", () => {
     expect(html).toContain("Create private link");
   });
 
+  it("renderHome hides the paste form behind a <details> disclosure", () => {
+    const html = renderHome();
+    expect(html).toContain("<details");
+    expect(html).toContain("<summary");
+    expect(html).toMatch(/Try it in the browser/i);
+  });
+
   it("renderHome shows the one-line hero tagline", () => {
     const html = renderHome();
     expect(html).toMatch(/paste a script/i);
-    expect(html).toMatch(/curl URL/i);
+    expect(html).toMatch(/curl/i);
   });
 
-  it("renderHome mentions the /gh/ proxy as a discoverability line", () => {
+  it("renderHome leads with the CLI install command", () => {
     const html = renderHome();
-    expect(html).toContain("1ln.sh/gh/");
+    expect(html).toContain("curl 1ln.sh/install | sh");
+    expect(html).toContain("1ln push");
+  });
+
+  it("renderHome shows the MCP install command", () => {
+    const html = renderHome();
+    expect(html).toContain("claude mcp add 1ln");
+    expect(html).toContain("1ln-mcp");
+  });
+
+  it("renderHome links to github and npm", () => {
+    const html = renderHome();
+    expect(html).toContain("https://github.com/onelinesh/1ln");
+    expect(html).toContain("https://www.npmjs.com/package/1ln-mcp");
+  });
+
+  it("renderHome no longer promotes the /gh/ proxy on the landing page", () => {
+    const html = renderHome();
+    expect(html).not.toContain("1ln.sh/gh/");
   });
 
   it("renderResult shows the one-liner and the delete token", () => {
