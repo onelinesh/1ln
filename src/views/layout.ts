@@ -81,6 +81,17 @@ pre { background: var(--surface); border: 1px solid var(--border); padding: 14px
 .proxy-mention { margin-top: 36px; font-size: 13px; }
 .proxy-mention code { background: var(--surface); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
 
+.home-links { margin: 18px 0 8px; font-size: 14px; }
+.home-links .dot { padding: 0 6px; }
+
+.browser-try { margin-top: 36px; border-top: 1px solid var(--border); padding-top: 18px; }
+.browser-try summary { cursor: pointer; color: var(--text-secondary); font-size: 14px; list-style: none; user-select: none; }
+.browser-try summary::-webkit-details-marker { display: none; }
+.browser-try summary::before { content: "▸ "; color: var(--text-muted); display: inline-block; width: 1em; transition: transform .12s; }
+.browser-try[open] summary::before { content: "▾ "; }
+.browser-try summary:hover { color: var(--accent); }
+.browser-try .paste-form { margin-top: 14px; }
+
 @media (max-width: 480px) {
   .paste-actions .btn-primary, .paste-actions .btn-secondary { flex: 1 1 100%; }
 }
