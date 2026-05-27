@@ -75,7 +75,7 @@ The `mcp/` directory has its own `package.json` and `node_modules` — it's a co
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YairEtzion/1ln.git",
+    "url": "git+https://github.com/onelinesh/1ln.git",
     "directory": "mcp"
   },
   "license": "MIT"
