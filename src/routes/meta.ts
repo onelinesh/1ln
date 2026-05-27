@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../env";
 import { getScriptBySlug } from "../repos/scripts";
+import { verifyContentHmac } from "../integrity";
 
 export const meta = new Hono<{ Bindings: Env }>();
 
@@ -21,6 +22,19 @@ meta.get("/:slug", async (c, next) => {
   }
   if (row.single_use === 1 && row.consumed_at !== null) {
     return c.json({ error: "already consumed" }, 410);
+  }
+  // Tamper detection — see raw.ts. NULL hmac = legacy row, accept.
+  if (row.content !== null && row.content_hmac !== null) {
+    const ok = await verifyContentHmac(
+      c.env.SCRIPT_HMAC_SECRET,
+      row.slug,
+      row.content,
+      row.content_hmac
+    );
+    if (!ok) {
+      console.warn(`integrity check failed for slug=${row.slug}`);
+      return c.json({ error: "Script content failed integrity check" }, 410);
+    }
   }
   const content = row.content ?? "";
   return c.json({
