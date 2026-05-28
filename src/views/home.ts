@@ -80,9 +80,6 @@ export function renderHome(): string {
 
 <section class="example">
   <p class="block-label">Pass parameters at runtime</p>
-  <p class="secondary params-lede">
-    1ln.sh passes URL query parameters to the executing shell script as environment variables prefixed with <code>ENV_1LN_</code>. So <code>?port=8080&amp;env=staging</code> makes <code>$ENV_1LN_PORT</code> and <code>$ENV_1LN_ENV</code> available inside the script — one shared script, many environments.
-  </p>
   <div class="hero-example" aria-label="Pass parameters at runtime">
     <div class="hero-example-comment"># add ?key=value pairs to the URL — they land as $ENV_1LN_KEY</div>
     <div class="hero-example-line">
