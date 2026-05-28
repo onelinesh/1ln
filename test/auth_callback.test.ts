@@ -124,4 +124,25 @@ describe("GET /auth/github/callback", () => {
     );
     expect(res.status).toBe(400);
   });
+
+  it("502 with static message when GitHub exchange fails — does NOT reflect upstream error text", async () => {
+    const session = await openSession();
+    installGithubFetchStub((url) => {
+      if (url.startsWith("https://github.com/login/oauth/access_token")) {
+        return new Response(
+          JSON.stringify({ error: "<script>alert('xss')</script>" }),
+          { status: 200, headers: { "content-type": "application/json" } }
+        );
+      }
+      throw new Error(`unexpected: ${url}`);
+    });
+    const res = await SELF.fetch(
+      `http://x/auth/github/callback?code=CODE&state=${session}`
+    );
+    expect(res.status).toBe(502);
+    const html = await res.text();
+    expect(html).not.toContain("<script>");
+    expect(html).not.toContain("alert(");
+    expect(html).toMatch(/something went wrong/i);
+  });
 });

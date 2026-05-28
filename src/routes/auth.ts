@@ -106,8 +106,14 @@ auth.get("/auth/github/callback", async (c) => {
       fetch: globalThis.fetch,
     });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    return c.html(`<h1>Login failed</h1><p>${msg}</p>`, 502);
+    // Log the real error server-side; never reflect into the response — the
+    // exception message may contain attacker-influenced data from upstream
+    // (e.g. GitHub OAuth error codes). Keep the user-facing page static.
+    console.error("github oauth callback failed:", e);
+    return c.html(
+      "<h1>Login failed</h1><p>Something went wrong talking to GitHub. Please try again.</p>",
+      502
+    );
   }
 
   const user = await upsertByGithubId(c.env.DB, githubId);
