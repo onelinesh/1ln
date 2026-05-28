@@ -115,3 +115,29 @@ export async function markConsumed(db: D1Database, slug: string): Promise<boolea
     .run();
   return (result.meta.changes ?? 0) > 0;
 }
+
+export type OwnedListItem = {
+  slug: string;
+  visibility: "public" | "private";
+  name: string | null;
+  size: number;
+  expires_at: number | null;
+  created_at: number;
+  updated_at: number;
+};
+
+export async function listByOwner(
+  db: D1Database,
+  ownerId: string
+): Promise<OwnedListItem[]> {
+  const result = await db
+    .prepare(
+      `SELECT slug, visibility, name, length(content) AS size, expires_at, created_at, updated_at
+       FROM scripts
+       WHERE owner_id = ? AND kind = 'hosted'
+       ORDER BY created_at DESC`
+    )
+    .bind(ownerId)
+    .all<OwnedListItem>();
+  return result.results;
+}

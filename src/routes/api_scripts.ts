@@ -4,11 +4,12 @@ import {
   createHostedScript,
   getScriptBySlug,
   deleteScript,
+  listByOwner,
 } from "../repos/scripts";
 import { generateDeleteToken, hashToken, verifyToken } from "../tokens";
 import { checkAnonymousLimit, checkAuthedLimit } from "../ratelimit";
 import { parseExpires } from "../expires";
-import { optionalBearer, type AuthUser, type AuthVars } from "../auth";
+import { optionalBearer, requireBearer, type AuthUser, type AuthVars } from "../auth";
 
 export const MAX_ANON_SIZE = 16 * 1024;
 export const MAX_AUTHED_SIZE = 64 * 1024;
@@ -141,4 +142,10 @@ apiScripts.delete("/api/scripts/:slug", optionalBearer, async (c) => {
   await deleteScript(c.env.DB, slug);
   await c.env.SCRIPT_CACHE.delete(`script:${slug}`);
   return new Response(null, { status: 204 });
+});
+
+apiScripts.get("/api/scripts", requireBearer, async (c) => {
+  const user = c.get("authUser")!;
+  const items = await listByOwner(c.env.DB, user.user_id);
+  return c.json({ scripts: items });
 });
