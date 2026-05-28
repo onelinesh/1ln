@@ -5,6 +5,8 @@ import {
   getScriptBySlug,
   deleteScript,
   listByOwner,
+  updateOwnedName,
+  updateOwnedContent,
 } from "../repos/scripts";
 import { generateDeleteToken, hashToken, verifyToken } from "../tokens";
 import { checkAnonymousLimit, checkAuthedLimit } from "../ratelimit";
@@ -148,4 +150,43 @@ apiScripts.get("/api/scripts", requireBearer, async (c) => {
   const user = c.get("authUser")!;
   const items = await listByOwner(c.env.DB, user.user_id);
   return c.json({ scripts: items });
+});
+
+apiScripts.patch("/api/scripts/:slug", requireBearer, async (c) => {
+  const user = c.get("authUser")!;
+  const slug = c.req.param("slug");
+  const body = await c.req.json().catch(() => null);
+  if (!body || (typeof body.name !== "string" && typeof body.content !== "string")) {
+    return c.json({ error: "patch must set `name` or `content`" }, 400);
+  }
+
+  const row = await getScriptBySlug(c.env.DB, slug);
+  if (!row) return c.json({ error: "not found" }, 404);
+  if (row.owner_id !== user.user_id) return c.json({ error: "forbidden" }, 403);
+
+  if (typeof body.content === "string") {
+    if (row.visibility !== "private") {
+      return c.json({ error: "public scripts are immutable; delete and republish" }, 409);
+    }
+    if (new TextEncoder().encode(body.content).length > MAX_AUTHED_SIZE) {
+      return c.json({ error: "script too large" }, 413);
+    }
+    const ok = await updateOwnedContent(
+      c.env.DB,
+      slug,
+      user.user_id,
+      body.content,
+      c.env.SCRIPT_HMAC_SECRET
+    );
+    if (!ok) return c.json({ error: "not found" }, 404);
+    await c.env.SCRIPT_CACHE.delete(`script:${slug}`);
+  }
+
+  if (typeof body.name === "string") {
+    const name = body.name.length === 0 ? null : body.name;
+    const ok = await updateOwnedName(c.env.DB, slug, user.user_id, name);
+    if (!ok) return c.json({ error: "not found" }, 404);
+  }
+
+  return c.json({ ok: true });
 });

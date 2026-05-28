@@ -141,3 +141,42 @@ export async function listByOwner(
     .all<OwnedListItem>();
   return result.results;
 }
+
+/** Updates `name` on an owned hosted script. Returns true if a row changed. */
+export async function updateOwnedName(
+  db: D1Database,
+  slug: string,
+  ownerId: string,
+  name: string | null
+): Promise<boolean> {
+  const r = await db
+    .prepare(
+      `UPDATE scripts SET name = ?, updated_at = ?
+       WHERE slug = ? AND owner_id = ? AND kind = 'hosted'`
+    )
+    .bind(name, Date.now(), slug, ownerId)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}
+
+/**
+ * Updates content (private hosted only) and recomputes the content HMAC bound
+ * to the same slug. Returns true if a row changed.
+ */
+export async function updateOwnedContent(
+  db: D1Database,
+  slug: string,
+  ownerId: string,
+  content: string,
+  hmacSecret: string
+): Promise<boolean> {
+  const hmac = await computeContentHmac(hmacSecret, slug, content);
+  const r = await db
+    .prepare(
+      `UPDATE scripts SET content = ?, content_hmac = ?, updated_at = ?
+       WHERE slug = ? AND owner_id = ? AND kind = 'hosted' AND visibility = 'private'`
+    )
+    .bind(content, hmac, Date.now(), slug, ownerId)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}
