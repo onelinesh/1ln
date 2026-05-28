@@ -7,7 +7,8 @@ import {
   fetchGithubUserId,
 } from "../oauth_github";
 import { upsertByGithubId } from "../repos/users";
-import { createApiToken } from "../repos/api_tokens";
+import { createApiToken, revokeApiToken } from "../repos/api_tokens";
+import { requireBearer, type AuthVars } from "../auth";
 
 const SESSION_TTL_SECONDS = 300;
 const POLL_INTERVAL_SECONDS = 2;
@@ -40,7 +41,7 @@ async function writeSession(
   });
 }
 
-export const auth = new Hono<{ Bindings: Env }>();
+export const auth = new Hono<{ Bindings: Env; Variables: AuthVars }>();
 
 auth.all("/auth/cli/init", async (c) => {
   if (c.req.method !== "POST") {
@@ -122,4 +123,24 @@ auth.get("/auth/github/callback", async (c) => {
 <p>You can close this window. Return to your terminal.</p>`,
     200
   );
+});
+
+auth.get("/auth/cli/poll", async (c) => {
+  const session = c.req.query("session");
+  if (!session) return c.json({ error: "session required" }, 400);
+  const raw = await c.env.SCRIPT_CACHE.get(sessionKey(session));
+  if (!raw) return c.json({ error: "unknown or expired session" }, 404);
+  const s = JSON.parse(raw) as CliSession;
+  if (s.status === "pending") {
+    return c.json({ status: "pending" });
+  }
+  // status === "complete" — one-shot delivery: hand over the token and delete the entry.
+  await c.env.SCRIPT_CACHE.delete(sessionKey(session));
+  return c.json({ status: "complete", token: s.token });
+});
+
+auth.post("/auth/logout", requireBearer, async (c) => {
+  const user = c.get("authUser")!;
+  await revokeApiToken(c.env.DB, user.token_id);
+  return new Response(null, { status: 204 });
 });
