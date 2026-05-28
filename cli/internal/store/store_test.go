@@ -121,3 +121,56 @@ func TestSave_AtomicViaRename(t *testing.T) {
 		t.Errorf("expected 2 entries, got %d", len(s2.Entries))
 	}
 }
+
+func TestLoad_ReadsLegacyArrayFormat(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	if err := os.WriteFile(path, []byte(`[{"slug":"abc","delete_token":"T","created_at":"2026-05-28T00:00:00Z"}]`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	s, err := LoadFrom(path)
+	if err != nil {
+		t.Fatalf("LoadFrom: %v", err)
+	}
+	if s.Token != "" {
+		t.Errorf("Token = %q, want empty (legacy file)", s.Token)
+	}
+	if len(s.Entries) != 1 || s.Entries[0].Slug != "abc" {
+		t.Errorf("Entries = %+v, want one abc", s.Entries)
+	}
+}
+
+func TestSaveLoad_RoundTripsTokenAndEntries(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	s := &Store{Path: path, Token: "TKN", Entries: []Entry{
+		{Slug: "abc", DeleteToken: "X", CreatedAt: time.Date(2026, 5, 28, 0, 0, 0, 0, time.UTC)},
+	}}
+	if err := s.Save(); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := LoadFrom(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if loaded.Token != "TKN" {
+		t.Errorf("Token = %q, want TKN", loaded.Token)
+	}
+	if len(loaded.Entries) != 1 || loaded.Entries[0].Slug != "abc" {
+		t.Errorf("Entries = %+v", loaded.Entries)
+	}
+}
+
+func TestSetToken_UpdatesAndClears(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	s := &Store{Path: path}
+	s.SetToken("TKN")
+	if s.Token != "TKN" {
+		t.Errorf("Token = %q", s.Token)
+	}
+	s.ClearToken()
+	if s.Token != "" {
+		t.Errorf("Token after clear = %q", s.Token)
+	}
+}
