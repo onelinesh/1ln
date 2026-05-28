@@ -14,11 +14,27 @@ const CLAUDE_DESKTOP_JSON = `{
   }
 }`;
 
+const JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "1ln.sh",
+  url: "https://1ln.sh",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Linux, macOS, Unix",
+  description:
+    "1ln.sh turns shell scripts into short curl-pipe-sh URLs. Push a script with the 1ln CLI, get back a one-line install URL like curl 1ln.sh/oGcP that you can run on any server. Integrates with Claude, Cursor, and other MCP clients via the 1ln-mcp npm package.",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  creator: { "@type": "Organization", name: "1ln.sh", url: "https://1ln.sh" },
+  downloadUrl: "https://1ln.sh/install",
+  installUrl: "https://1ln.sh/install",
+});
+
 export function renderHome(): string {
   return layout(
-    "1ln.sh — paste a script, get a curl URL",
+    "1ln.sh — Host Shell Install Scripts as One-Line curl URLs",
     `<section class="hero">
-  <p class="hero-tagline">Push a shell script. Get a short URL you can run on any server.</p>
+  <h1>Host shell install scripts as one-line curl URLs</h1>
+  <p class="hero-tagline">Push a shell script with the 1ln CLI. Get back a short <code>curl 1ln.sh/&lt;slug&gt; | sh</code> URL you can run on any server. Also proxies GitHub install scripts.</p>
   <div class="code-row">
     <pre id="install-cmd" data-copy-value="curl 1ln.sh/install | sh">curl 1ln.sh/install | sh</pre>
     ${renderCopyButton("install-cmd")}
@@ -77,6 +93,12 @@ export function renderHome(): string {
 </section>
 
 <p class="try-link"><a href="/try">Try it in the browser &rarr;</a></p>
-${copyButtonScript()}`
+${copyButtonScript()}`,
+    {
+      path: "/",
+      description:
+        "Host shell install scripts as one-line curl URLs. Push a script with the 1ln CLI, get back curl 1ln.sh/<slug> | sh — run it on any server. Free, open source, MCP-compatible.",
+      headExtra: `<script type="application/ld+json">${JSON_LD}</script>`,
+    }
   );
 }

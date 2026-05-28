@@ -10,12 +10,13 @@ export function escapeHtml(s: string): string {
     .replaceAll("'", "&#39;");
 }
 
-const META = `
-<meta property="og:title" content="1ln.sh">
-<meta property="og:description" content="Paste a shell script. Get a one-line curl URL.">
-<meta property="og:image" content="https://1ln.sh/og.png">
-<meta property="og:url" content="https://1ln.sh">
+const SITE_ORIGIN = "https://1ln.sh";
+const DEFAULT_DESCRIPTION =
+  "Host shell install scripts as one-line curl URLs. Push a script with the 1ln CLI, get back curl 1ln.sh/<slug> | sh — run it on any server.";
+
+const STATIC_META = `
 <meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="https://1ln.sh/og.png">
 <meta name="theme-color" content="#0d0d0d">
 <meta name="application-name" content="1ln">
 <meta name="apple-mobile-web-app-title" content="1ln">
@@ -137,15 +138,36 @@ pre { background: var(--surface); border: 1px solid var(--border); padding: 14px
 .chip.danger { color: var(--danger); border-color: rgba(232, 93, 77, 0.4); background: rgba(232, 93, 77, 0.06); }
 `.trim();
 
-export function layout(title: string, body: string): string {
+export type LayoutOpts = {
+  path?: string;
+  description?: string;
+  ogTitle?: string;
+  noindex?: boolean;
+  headExtra?: string;
+};
+
+export function layout(title: string, body: string, opts: LayoutOpts = {}): string {
+  const path = opts.path ?? "/";
+  const canonical = SITE_ORIGIN + (path === "/" ? "" : path);
+  const description = opts.description ?? DEFAULT_DESCRIPTION;
+  const ogTitle = opts.ogTitle ?? title;
+  const robots = opts.noindex ? `<meta name="robots" content="noindex">` : "";
+
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
-<meta name="description" content="Paste a shell script. Get a one-line curl URL you can run on any server. Or proxy any install script from GitHub.">
-${META}
+<meta name="description" content="${escapeHtml(description)}">
+<link rel="canonical" href="${escapeHtml(canonical)}">
+${robots}
+<meta property="og:type" content="website">
+<meta property="og:title" content="${escapeHtml(ogTitle)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:url" content="${escapeHtml(canonical)}">
+${STATIC_META}
+${opts.headExtra ?? ""}
 <style>${STYLES}</style>
 </head>
 <body>

@@ -22,7 +22,7 @@ export function renderPreview(opts: {
   const oneliner = `curl 1ln.sh/${opts.slug} | sh`;
   const created = new Date(opts.createdAt).toISOString();
   return layout(
-    `1ln.sh/${opts.slug}`,
+    `1ln.sh/${opts.slug} — shell script`,
     `<h1>1ln.sh/<span class="accent">${escapeHtml(opts.slug)}</span></h1>
 
 <div class="status-row">
@@ -42,6 +42,11 @@ export function renderPreview(opts: {
   <a href="/${escapeHtml(opts.slug)}">Raw</a> ·
   <a href="mailto:abuse@1ln.sh?subject=Report%20${encodeURIComponent(opts.slug)}">Report abuse</a>
 </p>
-${copyButtonScript()}`
+${copyButtonScript()}`,
+    {
+      path: `/${opts.slug}?view`,
+      description: `Shell script hosted on 1ln.sh. Run with curl 1ln.sh/${opts.slug} | sh.`,
+      noindex: true,
+    }
   );
 }

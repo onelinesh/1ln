@@ -16,7 +16,7 @@ export function renderGhPreview(opts: {
     : `curl 1ln.sh/gh/${opts.user}/${opts.repo}${opts.path !== "install.sh" ? "/" + opts.path : ""} | sh`;
 
   return layout(
-    `1ln.sh/gh/${opts.user}/${opts.repo}`,
+    `Install ${opts.user}/${opts.repo} via 1ln.sh`,
     `<h1>1ln.sh/gh/<span class="accent">${escapeHtml(opts.user)}/${escapeHtml(opts.repo)}</span></h1>
 
 <div class="status-row">
@@ -38,6 +38,11 @@ export function renderGhPreview(opts: {
   Source: <a href="${escapeHtml(opts.sourceUrl)}" rel="noopener">${escapeHtml(opts.sourceUrl)}</a> ·
   <a href="mailto:abuse@1ln.sh?subject=Report%20gh/${encodeURIComponent(opts.user + "/" + opts.repo)}">Report abuse</a>
 </p>
-${copyButtonScript()}`
+${copyButtonScript()}`,
+    {
+      path: `/gh/${opts.user}/${opts.repo}?view`,
+      description: `Install ${opts.user}/${opts.repo} from GitHub with curl 1ln.sh/gh/${opts.user}/${opts.repo} | sh — proxied through 1ln.sh.`,
+      noindex: true,
+    }
   );
 }
