@@ -73,6 +73,12 @@ This opens a browser to authenticate with GitHub. After login:
 
 We store only your numeric GitHub user id. No email, no username, no avatar.
 
+### Known limitation: don't click unsolicited login URLs
+
+The login flow currently has no out-of-band binding between the CLI that started a session and the GitHub user who completes it. If someone sends you a `https://1ln.sh/auth/cli/login?session=…` URL that **you did not generate yourself**, do **not** open it — completing GitHub auth would mint a token authorized as you into the sender's terminal session.
+
+The safe pattern is: run `1ln login` in your own terminal, then click the URL it prints. A device-flow user-code confirmation step is planned to close this gap (see [`docs/superpowers/plans/2026-05-28-cli-login-user-code.md`](../docs/superpowers/plans/2026-05-28-cli-login-user-code.md)).
+
 ## Environment
 
 | Variable | Default | Purpose |
