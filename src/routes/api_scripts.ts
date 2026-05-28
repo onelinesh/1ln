@@ -183,6 +183,9 @@ apiScripts.patch("/api/scripts/:slug", requireBearer, async (c) => {
   }
 
   if (typeof body.name === "string") {
+    if (body.name.length > 255) {
+      return c.json({ error: "name too long (max 255 chars)" }, 400);
+    }
     const name = body.name.length === 0 ? null : body.name;
     const ok = await updateOwnedName(c.env.DB, slug, user.user_id, name);
     if (!ok) return c.json({ error: "not found" }, 404);

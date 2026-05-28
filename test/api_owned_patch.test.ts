@@ -93,4 +93,26 @@ describe("PATCH /api/scripts/:slug", () => {
     const r2 = await SELF.fetch(`http://x/${slug}`);
     expect(await r2.text()).toBe("echo after");
   });
+
+  it("rejects name longer than 255 chars", async () => {
+    const { token } = await mint("5010");
+    const slug = await pushOwned(token, "echo x");
+    const longName = "n".repeat(256);
+    const res = await patch(slug, token, { name: longName });
+    expect(res.status).toBe(400);
+    // The DB row should be unchanged.
+    const row = await env.DB
+      .prepare("SELECT name FROM scripts WHERE slug = ?")
+      .bind(slug)
+      .first<{ name: string | null }>();
+    expect(row?.name).toBeNull();
+  });
+
+  it("accepts name exactly at 255 chars", async () => {
+    const { token } = await mint("5011");
+    const slug = await pushOwned(token, "echo x");
+    const okName = "n".repeat(255);
+    const res = await patch(slug, token, { name: okName });
+    expect(res.status).toBe(200);
+  });
 });
