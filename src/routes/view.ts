@@ -4,6 +4,7 @@ import { getScriptBySlug } from "../repos/scripts";
 import { verifyContentHmac } from "../integrity";
 import { renderPreview } from "../views/preview";
 import { renderGone } from "../views/gone";
+import { parseParams } from "../params";
 
 export const view = new Hono<{ Bindings: Env }>();
 
@@ -42,6 +43,7 @@ view.get("/:slug", async (c, next) => {
       content: row.content ?? "",
       visibility: row.visibility,
       createdAt: row.created_at,
+      params: parseParams(url),
     })
   );
 });
