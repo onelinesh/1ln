@@ -14,6 +14,10 @@ import (
 )
 
 func runPush(args []string) error {
+	return runPushWithStdin(os.Stdin, args)
+}
+
+func runPushWithStdin(stdin io.Reader, args []string) error {
 	fs := flag.NewFlagSet("push", flag.ContinueOnError)
 	public := fs.Bool("public", false, "create a short public URL")
 	expires := fs.String("expires", "never", "1h | 24h | 1run | never")
@@ -28,7 +32,7 @@ func runPush(args []string) error {
 		err     error
 	)
 	if len(rest) == 0 {
-		content, err = io.ReadAll(os.Stdin)
+		content, err = io.ReadAll(stdin)
 	} else {
 		content, err = os.ReadFile(rest[0])
 	}
@@ -44,7 +48,11 @@ func runPush(args []string) error {
 		visibility = "public"
 	}
 
+	s, _ := store.Load()
 	c := api.New(config.BaseURL())
+	if s != nil {
+		c.Token = s.Token
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	res, err := c.Publish(ctx, api.PublishInput{
@@ -56,7 +64,7 @@ func runPush(args []string) error {
 		return err
 	}
 
-	if s, loadErr := store.Load(); loadErr == nil {
+	if s != nil {
 		s.Add(store.Entry{
 			Slug:        res.Slug,
 			URL:         res.URL,
@@ -70,8 +78,6 @@ func runPush(args []string) error {
 		if saveErr := s.Save(); saveErr != nil {
 			fmt.Fprintln(os.Stderr, "warning: could not save token store:", saveErr)
 		}
-	} else {
-		fmt.Fprintln(os.Stderr, "warning: could not load token store:", loadErr)
 	}
 
 	fmt.Println(res.Oneliner)

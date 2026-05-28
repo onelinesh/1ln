@@ -115,3 +115,68 @@ export async function markConsumed(db: D1Database, slug: string): Promise<boolea
     .run();
   return (result.meta.changes ?? 0) > 0;
 }
+
+export type OwnedListItem = {
+  slug: string;
+  visibility: "public" | "private";
+  name: string | null;
+  size: number;
+  expires_at: number | null;
+  created_at: number;
+  updated_at: number;
+};
+
+export async function listByOwner(
+  db: D1Database,
+  ownerId: string
+): Promise<OwnedListItem[]> {
+  const result = await db
+    .prepare(
+      `SELECT slug, visibility, name, length(content) AS size, expires_at, created_at, updated_at
+       FROM scripts
+       WHERE owner_id = ? AND kind = 'hosted'
+       ORDER BY created_at DESC`
+    )
+    .bind(ownerId)
+    .all<OwnedListItem>();
+  return result.results;
+}
+
+/** Updates `name` on an owned hosted script. Returns true if a row changed. */
+export async function updateOwnedName(
+  db: D1Database,
+  slug: string,
+  ownerId: string,
+  name: string | null
+): Promise<boolean> {
+  const r = await db
+    .prepare(
+      `UPDATE scripts SET name = ?, updated_at = ?
+       WHERE slug = ? AND owner_id = ? AND kind = 'hosted'`
+    )
+    .bind(name, Date.now(), slug, ownerId)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}
+
+/**
+ * Updates content (private hosted only) and recomputes the content HMAC bound
+ * to the same slug. Returns true if a row changed.
+ */
+export async function updateOwnedContent(
+  db: D1Database,
+  slug: string,
+  ownerId: string,
+  content: string,
+  hmacSecret: string
+): Promise<boolean> {
+  const hmac = await computeContentHmac(hmacSecret, slug, content);
+  const r = await db
+    .prepare(
+      `UPDATE scripts SET content = ?, content_hmac = ?, updated_at = ?
+       WHERE slug = ? AND owner_id = ? AND kind = 'hosted' AND visibility = 'private'`
+    )
+    .bind(content, hmac, Date.now(), slug, ownerId)
+    .run();
+  return (r.meta.changes ?? 0) > 0;
+}

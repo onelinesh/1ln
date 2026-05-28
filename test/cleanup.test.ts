@@ -39,4 +39,15 @@ describe("cleanupExpired", () => {
     await cleanupExpired(env.DB);
     expect(await getScriptBySlug(env.DB, row.slug)).not.toBeNull();
   });
+
+  it("does not delete rows with NULL expires_at (authed `never`)", async () => {
+    await env.DB.prepare(
+      `INSERT INTO scripts (slug, kind, content, visibility, owner_id, expires_at, content_hmac, created_at, updated_at)
+       VALUES ('keepme', 'hosted', 'echo keep', 'private', 'u_1', NULL, 'd0', ?, ?)`
+    ).bind(Date.now(), Date.now()).run();
+    const { cleanupExpired } = await import("../src/cleanup");
+    await cleanupExpired(env.DB);
+    const row = await env.DB.prepare("SELECT 1 FROM scripts WHERE slug = 'keepme'").first();
+    expect(row).not.toBeNull();
+  });
 });

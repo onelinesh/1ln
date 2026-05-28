@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,7 +15,7 @@ type Entry struct {
 	Slug        string    `json:"slug"`
 	URL         string    `json:"url,omitempty"`
 	Oneliner    string    `json:"oneliner,omitempty"`
-	DeleteToken string    `json:"delete_token"`
+	DeleteToken string    `json:"delete_token,omitempty"`
 	Visibility  string    `json:"visibility,omitempty"`
 	Expires     string    `json:"expires,omitempty"`
 	Name        string    `json:"name,omitempty"`
@@ -23,7 +24,16 @@ type Entry struct {
 
 type Store struct {
 	Path    string
-	Entries []Entry
+	Token   string  `json:"token,omitempty"`
+	Entries []Entry `json:"entries"`
+}
+
+// fileShape is the on-disk format. We support both:
+//   - new: {"token": "...", "entries": [...]}
+//   - legacy: [...]   (bare array of entries — pre-Plan-2 files)
+type fileShape struct {
+	Token   string  `json:"token,omitempty"`
+	Entries []Entry `json:"entries"`
 }
 
 func DefaultPath() (string, error) {
@@ -54,12 +64,25 @@ func LoadFrom(path string) (*Store, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read %s: %w", path, err)
 	}
-	if len(data) == 0 {
+	trimmed := bytes.TrimSpace(data)
+	if len(trimmed) == 0 {
 		return s, nil
 	}
-	if err := json.Unmarshal(data, &s.Entries); err != nil {
+	if trimmed[0] == '[' {
+		// Legacy bare-array file.
+		var entries []Entry
+		if err := json.Unmarshal(data, &entries); err != nil {
+			return nil, fmt.Errorf("parse legacy %s: %w", path, err)
+		}
+		s.Entries = entries
+		return s, nil
+	}
+	var f fileShape
+	if err := json.Unmarshal(data, &f); err != nil {
 		return nil, fmt.Errorf("parse %s: %w", path, err)
 	}
+	s.Token = f.Token
+	s.Entries = f.Entries
 	return s, nil
 }
 
@@ -71,7 +94,7 @@ func (s *Store) Save() error {
 	if err := os.Chmod(dir, 0o700); err != nil {
 		return fmt.Errorf("chmod %s: %w", dir, err)
 	}
-	data, err := json.MarshalIndent(s.Entries, "", "  ")
+	data, err := json.MarshalIndent(fileShape{Token: s.Token, Entries: s.Entries}, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -85,9 +108,9 @@ func (s *Store) Save() error {
 	return nil
 }
 
-func (s *Store) Add(e Entry) {
-	s.Entries = append(s.Entries, e)
-}
+func (s *Store) Add(e Entry)       { s.Entries = append(s.Entries, e) }
+func (s *Store) SetToken(t string) { s.Token = t }
+func (s *Store) ClearToken()       { s.Token = "" }
 
 func (s *Store) Remove(slug string) (Entry, bool) {
 	for i, e := range s.Entries {

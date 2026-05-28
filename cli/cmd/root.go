@@ -18,6 +18,14 @@ func Run(args []string) error {
 		return runLs(rest)
 	case "rm":
 		return runRm(rest)
+	case "login":
+		return runLogin(rest)
+	case "logout":
+		return runLogout(rest)
+	case "edit":
+		return runEdit(rest)
+	case "rename":
+		return runRename(rest)
 	case "version", "--version", "-v":
 		return runVersion()
 	case "help", "--help", "-h":
@@ -41,12 +49,20 @@ Usage:
   1ln push [--public] [--expires DURATION] [--name NAME] [<file>]
   1ln ls
   1ln rm <slug>
+  1ln login
+  1ln logout
+  1ln edit <slug>
+  1ln rename <slug> <new-name>
   1ln version
 
 Options for push:
   --public           short shareable slug (default: private 22-char)
   --expires VALUE    1h | 24h | 1run | never (default: never)
   --name NAME        local label, stored in ~/.config/1ln/tokens.json
+
+When logged in (` + "`1ln login`" + `), push attaches scripts to your GitHub
+account, removes the 7-day TTL, raises the size cap to 64KB, and lets you ls/
+rm/edit/rename from any machine.
 
 If <file> is omitted, push reads the script from stdin.
 

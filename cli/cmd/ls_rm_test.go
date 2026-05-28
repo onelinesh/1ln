@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -115,5 +117,68 @@ func TestRm_APIErrorKeepsLocalEntry(t *testing.T) {
 	s, _ := store.LoadFrom(path)
 	if len(s.Entries) != 1 {
 		t.Errorf("entry should remain after API error, got %+v", s.Entries)
+	}
+}
+
+func TestLs_UsesServerListWhenLoggedIn(t *testing.T) {
+	var seenAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/scripts" {
+			t.Errorf("path = %s", r.URL.Path)
+		}
+		seenAuth = r.Header.Get("authorization")
+		w.Header().Set("content-type", "application/json")
+		_, _ = w.Write([]byte(`{"scripts":[{"slug":"abc","visibility":"private","name":null,"size":4,"expires_at":null,"created_at":1,"updated_at":1}]}`))
+	}))
+	defer srv.Close()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	s := &store.Store{Path: path, Token: "TKN"}
+	if err := s.Save(); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("ONELN_BASE_URL", srv.URL)
+	t.Setenv("ONELN_STORE", path)
+
+	var buf bytes.Buffer
+	oldStdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+	err := runLs(nil)
+	_ = w.Close()
+	os.Stdout = oldStdout
+	_, _ = io.Copy(&buf, r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(buf.String(), "abc") {
+		t.Errorf("output missing slug: %s", buf.String())
+	}
+	if seenAuth != "Bearer TKN" {
+		t.Errorf("auth = %q", seenAuth)
+	}
+}
+
+func TestRm_UsesBearerWhenLoggedIn(t *testing.T) {
+	var seenAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		w.WriteHeader(204)
+	}))
+	defer srv.Close()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	s := &store.Store{Path: path, Token: "TKN"}
+	if err := s.Save(); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("ONELN_BASE_URL", srv.URL)
+	t.Setenv("ONELN_STORE", path)
+
+	if err := runRm([]string{"someslug"}); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" {
+		t.Errorf("auth = %q", seenAuth)
 	}
 }

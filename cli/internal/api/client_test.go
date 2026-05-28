@@ -123,3 +123,151 @@ func TestDelete_ErrorIncludesStatusAndBody(t *testing.T) {
 		t.Fatalf("err = %v, want 403", err)
 	}
 }
+
+func TestInitLogin_ReturnsSessionAndUrls(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/auth/cli/init" || r.Method != "POST" {
+			t.Errorf("path = %s, method = %s", r.URL.Path, r.Method)
+		}
+		w.Header().Set("content-type", "application/json")
+		_, _ = w.Write([]byte(`{"session_id":"S","login_url":"http://x/login","poll_url":"http://x/poll","poll_interval_seconds":2,"expires_in_seconds":300}`))
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	res, err := c.InitLogin(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.SessionID != "S" || res.LoginURL != "http://x/login" || res.PollURL != "http://x/poll" {
+		t.Errorf("res = %+v", res)
+	}
+	if res.PollInterval != 2 || res.ExpiresIn != 300 {
+		t.Errorf("intervals = %d %d", res.PollInterval, res.ExpiresIn)
+	}
+}
+
+func TestPollLogin_ReturnsPendingOrComplete(t *testing.T) {
+	call := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		call++
+		w.Header().Set("content-type", "application/json")
+		if call == 1 {
+			_, _ = w.Write([]byte(`{"status":"pending"}`))
+			return
+		}
+		_, _ = w.Write([]byte(`{"status":"complete","token":"TKN"}`))
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	r1, err := c.PollLogin(context.Background(), "S")
+	if err != nil || r1.Status != "pending" || r1.Token != "" {
+		t.Errorf("r1 = %+v err = %v", r1, err)
+	}
+	r2, err := c.PollLogin(context.Background(), "S")
+	if err != nil || r2.Status != "complete" || r2.Token != "TKN" {
+		t.Errorf("r2 = %+v err = %v", r2, err)
+	}
+}
+
+func TestList_SendsBearerAndReturnsScripts(t *testing.T) {
+	var seenAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		w.Header().Set("content-type", "application/json")
+		_, _ = w.Write([]byte(`{"scripts":[{"slug":"a","visibility":"private","name":null,"size":4,"expires_at":null,"created_at":1,"updated_at":1}]}`))
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	items, err := c.List(context.Background(), "TKN")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" {
+		t.Errorf("auth = %q", seenAuth)
+	}
+	if len(items) != 1 || items[0].Slug != "a" {
+		t.Errorf("items = %+v", items)
+	}
+}
+
+func TestDeleteAuthed_SendsBearer(t *testing.T) {
+	var seenAuth, seenPath, seenMethod string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		seenPath = r.URL.Path
+		seenMethod = r.Method
+		w.WriteHeader(204)
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	if err := c.DeleteAuthed(context.Background(), "abc", "TKN"); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" || seenPath != "/api/scripts/abc" || seenMethod != "DELETE" {
+		t.Errorf("auth=%q path=%q method=%q", seenAuth, seenPath, seenMethod)
+	}
+}
+
+func TestLogout_SendsBearer(t *testing.T) {
+	var seenAuth, seenPath, seenMethod string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		seenPath = r.URL.Path
+		seenMethod = r.Method
+		w.WriteHeader(204)
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	if err := c.Logout(context.Background(), "TKN"); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" || seenPath != "/auth/logout" || seenMethod != "POST" {
+		t.Errorf("auth=%q path=%q method=%q", seenAuth, seenPath, seenMethod)
+	}
+}
+
+func TestPatch_SendsBearerAndBody(t *testing.T) {
+	var seenAuth, seenBody, seenPath, seenMethod string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		seenPath = r.URL.Path
+		seenMethod = r.Method
+		b, _ := io.ReadAll(r.Body)
+		seenBody = string(b)
+		w.Header().Set("content-type", "application/json")
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	if err := c.Patch(context.Background(), "abc", "TKN", PatchInput{Name: "n", Content: "echo c"}); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" || seenPath != "/api/scripts/abc" || seenMethod != "PATCH" {
+		t.Errorf("auth=%q path=%q method=%q", seenAuth, seenPath, seenMethod)
+	}
+	var body map[string]string
+	if err := json.Unmarshal([]byte(seenBody), &body); err != nil {
+		t.Fatal(err)
+	}
+	if body["name"] != "n" || body["content"] != "echo c" {
+		t.Errorf("body = %v", body)
+	}
+}
+
+func TestPublish_SendsBearerWhenProvided(t *testing.T) {
+	var seenAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		w.WriteHeader(201)
+		_, _ = w.Write([]byte(`{"slug":"a","url":"u","oneliner":"o"}`))
+	}))
+	defer srv.Close()
+	c := New(srv.URL)
+	c.Token = "TKN"
+	if _, err := c.Publish(context.Background(), PublishInput{Content: "x", Visibility: "public"}); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" {
+		t.Errorf("auth = %q, want Bearer TKN", seenAuth)
+	}
+}
