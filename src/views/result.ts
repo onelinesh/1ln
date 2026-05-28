@@ -23,6 +23,7 @@ export function renderResult(opts: { slug: string; deleteToken: string }): strin
 </div>
 
 <p style="margin-top:24px;"><a href="/">Create another</a></p>
-${copyButtonScript()}`
+${copyButtonScript()}`,
+    { path: `/${opts.slug}`, noindex: true }
   );
 }

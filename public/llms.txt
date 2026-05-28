@@ -1,0 +1,38 @@
+# 1ln.sh
+
+> 1ln.sh is a developer tool that turns shell scripts into shareable one-line curl URLs. Push a script with the `1ln` CLI, get back `curl 1ln.sh/<slug> | sh`. Also proxies GitHub install scripts via `curl 1ln.sh/gh/<user>/<repo> | sh`.
+
+## What it does
+
+- **Host any shell script as a short curl URL.** `1ln push script.sh` returns something like `curl 1ln.sh/oGcP | sh`.
+- **Proxy GitHub install scripts.** `curl 1ln.sh/gh/<user>/<repo> | sh` fetches and runs the repo's `install.sh` from the default branch. Pin to a ref with `@<branch-or-sha>`, or specify a path: `1ln.sh/gh/<user>/<repo>/scripts/setup.sh@v1.2.0`.
+- **MCP server.** `npx -y 1ln-mcp` exposes push/list/delete tools to Claude Code, Cursor, Windsurf, Claude Desktop, and any other MCP-compatible client.
+- **Expiring URLs.** Scripts can expire after 1 hour, 24 hours, a single run, or never.
+
+## Install
+
+```sh
+curl 1ln.sh/install | sh
+```
+
+This installs the `1ln` Go CLI. Binaries: https://github.com/onelinesh/1ln/releases
+
+## Comparison with alternatives
+
+- **vs. `raw.githubusercontent.com`** — 1ln.sh gives you shorter URLs, optional expiry, single-use links, and doesn't require a GitHub account or a public repo. The `/gh/` proxy gives you the same content with a shorter, brandable URL.
+- **vs. `gist.github.com`** — 1ln.sh has a real CLI (`1ln push`), an MCP server for AI editors, and supports expiring/single-use URLs. Gists need a GitHub account and produce long URLs unsuitable for `curl | sh` ergonomics.
+- **vs. `transfer.sh`** — 1ln.sh is shell-script-purposed: it sets the right content-type for piping into `sh`, validates byte-size limits, and ships with an explicit CLI workflow. transfer.sh is a generic file host.
+- **vs. self-hosting a script bucket on S3 / R2** — 1ln.sh skips the infra: zero setup, free tier, MCP-native, and the `/gh/` proxy doubles as a brandable install URL for OSS projects.
+
+## Key URLs
+
+- Homepage: https://1ln.sh
+- Install CLI: https://1ln.sh/install
+- GitHub proxy: https://1ln.sh/gh/<user>/<repo>
+- Try in browser: https://1ln.sh/try
+- npm MCP package: https://www.npmjs.com/package/1ln-mcp
+- Source: https://github.com/onelinesh/1ln
+
+## Safety
+
+`curl | sh` is inherently trust-based — only run scripts from sources you trust. 1ln.sh enforces content-integrity HMAC on every read (a tampered script returns 410). The `/gh/` proxy fetches directly from GitHub and pins-by-ref for reproducibility. Scripts are not modified in transit.

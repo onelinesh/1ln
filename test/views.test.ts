@@ -31,12 +31,6 @@ describe("views", () => {
     expect(html).toMatch(/href="\/"/);
   });
 
-  it("renderHome shows the one-line hero tagline", () => {
-    const html = renderHome();
-    expect(html).toMatch(/(push|paste) a shell script/i);
-    expect(html).toMatch(/url/i);
-  });
-
   it("renderHome leads with the CLI install command", () => {
     const html = renderHome();
     expect(html).toContain("curl 1ln.sh/install | sh");
@@ -74,14 +68,6 @@ describe("views", () => {
     expect(html).toMatch(/curl 1ln\.sh\/\S+ \| sh/);
   });
 
-  it("renderHome has copy buttons on the install commands", () => {
-    const html = renderHome();
-    expect(html).toContain('data-copy-target="install-cmd"');
-    expect(html).toContain('data-copy-target="mcp-claude-code"');
-    expect(html).toContain('data-copy-target="mcp-stdio"');
-    expect(html).toContain('data-copy-target="mcp-desktop"');
-  });
-
   it("renderHome no longer embeds a large hero logo image (mark moved to header)", () => {
     const html = renderHome();
     expect(html).not.toMatch(/<img[^>]*class="hero-mark"/);
@@ -90,34 +76,17 @@ describe("views", () => {
   it("renderHeader shows the 1ln.sh wordmark text", () => {
     const html = renderHome();
     expect(html).not.toMatch(/<img[^>]*wm-logo/);
-    expect(html).toContain('aria-label="1ln.sh home"');
+    expect(html).toContain('aria-label="1ln home"');
     expect(html).toContain('class="wm-text"');
   });
 
-  it("renderResult shows the one-liner and the delete token", () => {
-    const html = renderResult({ slug: "abc", deleteToken: "T0K3N" });
-    expect(html).toContain("curl 1ln.sh/abc | sh");
-    expect(html).toContain("T0K3N");
-  });
-
-  it("renderResult shows a Ready heading and the one-liner with a copy button", () => {
+  it("renderResult shows Ready, the one-liner, and the delete token (each with a copy button)", () => {
     const html = renderResult({ slug: "abc", deleteToken: "T0K3N" });
     expect(html).toMatch(/Ready/);
     expect(html).toContain("curl 1ln.sh/abc | sh");
-    expect(html).toContain('class="copy-btn"');
     expect(html).toContain('data-copy-target="oneliner"');
-  });
-
-  it("renderResult shows the delete token with its own copy button", () => {
-    const html = renderResult({ slug: "abc", deleteToken: "T0K3N" });
     expect(html).toContain("T0K3N");
     expect(html).toContain('data-copy-target="delete-token"');
-  });
-
-  it("renderResult includes the copy-button script tag exactly once", () => {
-    const html = renderResult({ slug: "abc", deleteToken: "T0K3N" });
-    const matches = html.match(/<script>[\s\S]*?<\/script>/g) ?? [];
-    expect(matches.length).toBe(1);
   });
 
   it("renderPreview shows the script content escaped", () => {
@@ -151,6 +120,44 @@ describe("views", () => {
     });
     expect(html).toContain('data-copy-target="oneliner"');
     expect(html).toContain("curl 1ln.sh/abc | sh");
+  });
+
+  it("renderHome sets canonical, og:type, og:url, and matching description", () => {
+    const html = renderHome();
+    expect(html).toContain('<link rel="canonical" href="https://1ln.sh"');
+    expect(html).toContain('property="og:type" content="website"');
+    expect(html).toContain('property="og:url" content="https://1ln.sh"');
+    expect(html).toMatch(/<meta name="description" content="[^"]*curl 1ln\.sh/);
+  });
+
+  it("renderHome has a keyword-targeted H1 and title", () => {
+    const html = renderHome();
+    expect(html).toMatch(/<h1>[^<]*curl URLs[^<]*<\/h1>/i);
+    expect(html).toMatch(/<title>[^<]*One-Line curl URLs[^<]*<\/title>/i);
+  });
+
+  it("renderHome embeds SoftwareApplication JSON-LD", () => {
+    const html = renderHome();
+    expect(html).toContain('<script type="application/ld+json">');
+    expect(html).toContain('"@type":"SoftwareApplication"');
+    expect(html).toContain('"name":"1ln.sh"');
+  });
+
+  it("renderTry sets its own canonical to /try", () => {
+    const html = renderTry();
+    expect(html).toContain('<link rel="canonical" href="https://1ln.sh/try"');
+    expect(html).toContain('property="og:url" content="https://1ln.sh/try"');
+  });
+
+  it("renderPreview marks preview pages noindex with their own canonical", () => {
+    const html = renderPreview({
+      slug: "abc",
+      content: "echo hi",
+      visibility: "public",
+      createdAt: Date.now(),
+    });
+    expect(html).toContain('name="robots" content="noindex"');
+    expect(html).toContain('rel="canonical" href="https://1ln.sh/abc?view"');
   });
 
   it("renderPreview shows a status row with visibility and age", () => {

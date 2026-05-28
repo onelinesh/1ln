@@ -17,6 +17,7 @@ export function renderGone(opts: GoneOpts): string {
     `<h1 class="danger">410 Gone</h1>
 <p>${escapeHtml(headline)}</p>
 <p class="secondary">${escapeHtml(detail)}</p>
-<p style="margin-top:24px;"><a href="/">Create a new one →</a></p>`
+<p style="margin-top:24px;"><a href="/">Create a new one →</a></p>`,
+    { noindex: true }
   );
 }

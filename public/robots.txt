@@ -1,0 +1,36 @@
+# https://1ln.sh
+# Public developer tool — content is intentionally crawlable and citable.
+
+User-agent: *
+Allow: /
+
+# Disallow transient preview routes to avoid index churn.
+Disallow: /*?view
+
+# Explicit allow for major AI / answer-engine crawlers.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# High-volume scraper with no citation value.
+User-agent: Bytespider
+Disallow: /
+
+Sitemap: https://1ln.sh/sitemap.xml

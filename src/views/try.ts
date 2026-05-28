@@ -2,7 +2,7 @@ import { layout } from "./layout";
 
 export function renderTry(): string {
   return layout(
-    "1ln.sh — try in the browser",
+    "1ln.sh — Try in the browser",
     `<h1>Try in the browser</h1>
 <p class="subtitle">Paste a shell script. Get a one-line <code>curl &hellip; | sh</code> URL.</p>
 
@@ -14,6 +14,11 @@ export function renderTry(): string {
   </div>
 </form>
 
-<p class="back-link"><a href="/">&larr; back</a></p>`
+<p class="back-link"><a href="/">&larr; back</a></p>`,
+    {
+      path: "/try",
+      description:
+        "Paste a shell script in the browser and get a one-line curl 1ln.sh/<slug> | sh URL. No signup needed.",
+    }
   );
 }
