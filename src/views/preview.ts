@@ -1,6 +1,7 @@
 import { layout, escapeHtml } from "./layout";
 import { renderCopyButton, copyButtonScript } from "./copy_button";
 import { highlightShell } from "./shell_highlight";
+import { buildPreamble } from "../params";
 
 function relativeAge(createdAt: number, nowMs = Date.now()): string {
   const diff = Math.max(0, nowMs - createdAt);
@@ -13,14 +14,33 @@ function relativeAge(createdAt: number, nowMs = Date.now()): string {
   return `${d}d ago`;
 }
 
+function renderParamsSection(params: Record<string, string>): string {
+  const preamble = buildPreamble(params);
+  if (preamble === "") return "";
+  // Strip the trailing blank line for display (it exists for shell-parse cleanliness,
+  // not for visual rendering).
+  const display = preamble.replace(/\n\n$/, "");
+  return `<h2>Runtime parameters</h2>
+<pre>${escapeHtml(display)}</pre>
+
+`;
+}
+
 export function renderPreview(opts: {
   slug: string;
   content: string;
   visibility: "public" | "private";
   createdAt: number;
+  params?: Record<string, string>;
+  /** The user's query string (without leading `?`, with view/meta stripped),
+   *  used to reflect their preview in the copy-button oneliner. */
+  query?: string;
 }): string {
-  const oneliner = `curl 1ln.sh/${opts.slug} | sh`;
+  const oneliner = opts.query
+    ? `curl 1ln.sh/${opts.slug}?${opts.query} | sh`
+    : `curl 1ln.sh/${opts.slug} | sh`;
   const created = new Date(opts.createdAt).toISOString();
+  const paramsSection = renderParamsSection(opts.params ?? {});
   return layout(
     `1ln.sh/${opts.slug} — shell script`,
     `<h1>1ln.sh/<span class="accent">${escapeHtml(opts.slug)}</span></h1>
@@ -35,7 +55,7 @@ export function renderPreview(opts: {
   ${renderCopyButton("oneliner")}
 </div>
 
-<h2>Script</h2>
+${paramsSection}<h2>Script</h2>
 <pre>${highlightShell(opts.content)}</pre>
 
 <p class="secondary" style="font-size:12px;">
