@@ -1,5 +1,5 @@
 export function renderWordmark(): string {
-  return `<a class="wm" href="/" aria-label="1ln.sh home"><img class="wm-logo" src="/logo.svg" alt="" /><span class="wm-text">1ln<span class="wm-dot">.sh</span></span></a>`;
+  return `<a class="wm" href="/" aria-label="1ln.sh home"><span class="wm-text">1ln<span class="wm-dot">.sh</span></span></a>`;
 }
 
 export function renderHeader(): string {

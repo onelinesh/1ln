@@ -41,9 +41,8 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .wrap { max-width: min(760px, 100vw - 32px); margin: 0 auto; padding: 28px 16px 48px; }
 
 .site-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-.wm { display: inline-flex; align-items: center; gap: 12px; line-height: 1; }
+.wm { display: inline-flex; align-items: center; line-height: 1; }
 .wm:hover { text-decoration: none; }
-.wm-logo { display: block; height: clamp(26px, 4vw, 32px); width: auto; flex-shrink: 0; }
 .wm-text { font-weight: 700; font-size: clamp(1.4rem, 4vw, 1.75rem); letter-spacing: -0.04em; color: var(--text); }
 .wm-dot { color: var(--text); }
 
