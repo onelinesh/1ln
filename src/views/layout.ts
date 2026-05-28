@@ -165,6 +165,8 @@ ${robots}
 <meta property="og:title" content="${escapeHtml(ogTitle)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:url" content="${escapeHtml(canonical)}">
+<meta name="twitter:title" content="${escapeHtml(ogTitle)}">
+<meta name="twitter:description" content="${escapeHtml(description)}">
 ${STATIC_META}
 ${opts.headExtra ?? ""}
 <style>${STYLES}</style>

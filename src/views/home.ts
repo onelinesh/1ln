@@ -22,7 +22,15 @@ const JSON_LD = JSON.stringify({
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Linux, macOS, Unix",
   description:
-    "1ln.sh turns shell scripts into short curl-pipe-sh URLs. Push a script with the 1ln CLI, get back a one-line install URL like curl 1ln.sh/oGcP that you can run on any server. Integrates with Claude, Cursor, and other MCP clients via the 1ln-mcp npm package.",
+    "1ln.sh turns shell scripts into short curl-pipe-sh URLs. Push a script with the 1ln CLI, get back a one-line install URL like curl 1ln.sh/oGcP that you can run on any server. Supports passing runtime parameters via URL query strings, available inside scripts as ENV_1LN_* environment variables. Integrates with Claude, Cursor, and other MCP clients via the 1ln-mcp npm package.",
+  featureList: [
+    "Host shell scripts as short curl-pipe-sh URLs",
+    "Pass URL query parameters to scripts as ENV_1LN_* environment variables",
+    "Configurable URL lifetime: 1 hour, 24 hours, one-time, or no expiry",
+    "GitHub install script proxy under the /gh/ path prefix",
+    "MCP server for Claude Code, Cursor, Windsurf, and other stdio clients",
+    "Go CLI: 1ln push, ls, rm, edit, rename, login",
+  ],
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   creator: { "@type": "Organization", name: "1ln.sh", url: "https://1ln.sh" },
   downloadUrl: "https://1ln.sh/install",
@@ -39,21 +47,6 @@ export function renderHome(): string {
     <pre id="install-cmd" data-copy-value="curl 1ln.sh/install | sh">curl 1ln.sh/install | sh</pre>
     ${renderCopyButton("install-cmd")}
   </div>
-</section>
-
-<section>
-  <h2>Pass parameters at runtime</h2>
-  <p class="secondary">
-    Append URL query parameters and they show up in the executing script as
-    <code>ENV_1LN_*</code> environment variables. Useful for per-environment
-    deploy scripts.
-  </p>
-  <pre>curl 1ln.sh/&lt;slug&gt;?port=8080&amp;env=staging | sh</pre>
-  <p class="secondary" style="font-size:12px;">
-    Keys must match <code>[a-zA-Z][a-zA-Z0-9_]{0,31}</code>; values are POSIX
-    single-quote escaped before injection (safe against shell metacharacters).
-    Max 16 params, 1KB per value, 4KB total. Invalid params are silently dropped.
-  </p>
 </section>
 
 <section class="example">
@@ -82,6 +75,22 @@ export function renderHome(): string {
       <span class="hero-example-cmd">curl 1ln.sh/oGcP | sh</span>
     </div>
     <pre class="hero-example-out">hello from prod-web-01</pre>
+  </div>
+</section>
+
+<section class="example">
+  <p class="block-label">Pass parameters at runtime</p>
+  <div class="hero-example" aria-label="Pass parameters at runtime">
+    <div class="hero-example-comment"># add ?key=value pairs to the URL — they land as $ENV_1LN_KEY</div>
+    <div class="hero-example-line">
+      <span class="hero-example-prompt server">staging $</span>
+      <span class="hero-example-cmd">curl 1ln.sh/oGcP?env=staging&amp;port=8080 | sh</span>
+    </div>
+    <pre class="hero-example-out"># 1ln.sh runtime parameters
+export ENV_1LN_ENV='staging'
+export ENV_1LN_PORT='8080'
+
+deployed staging on :8080</pre>
   </div>
 </section>
 
