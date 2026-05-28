@@ -5,7 +5,8 @@ const DAY_MS = 24 * HOUR_MS;
 export type ExpiresValue = "1h" | "24h" | "1run" | "never" | "7d-web-default";
 
 export type ParsedExpires = {
-  expiresAt: number;
+  /** Absolute ms timestamp; null when there is no expiry (authed `never`). */
+  expiresAt: number | null;
   singleUse: boolean;
 };
 
@@ -30,6 +31,11 @@ export function parseExpires(value: string | undefined, opts: ParseOpts): Parsed
     case "24h": return { expiresAt: opts.nowMs + clamp(DAY_MS), singleUse: false };
     case "1run": return { expiresAt: opts.nowMs + clamp(MAX_ANON_TTL_MS), singleUse: true };
     case "never":
+      // Authed: store NULL (truly never). Anonymous: clamp to 7d (existing behavior).
+      return {
+        expiresAt: opts.authed ? null : opts.nowMs + MAX_ANON_TTL_MS,
+        singleUse: false,
+      };
     case "7d-web-default":
       return { expiresAt: opts.nowMs + clamp(MAX_ANON_TTL_MS), singleUse: false };
     default: throw new Error(`unreachable: ${v}`);

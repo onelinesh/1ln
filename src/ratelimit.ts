@@ -16,3 +16,21 @@ export async function checkAnonymousLimit(
   await kv.put(key, String(current + 1), { expirationTtl: DAY_SECONDS });
   return true;
 }
+
+const AUTHED_DAILY_LIMIT = 100;
+
+function authedTodayKey(userId: string): string {
+  const day = Math.floor(Date.now() / 1000 / DAY_SECONDS);
+  return `rl:user:${day}:${userId}`;
+}
+
+export async function checkAuthedLimit(
+  kv: KVNamespace,
+  userId: string
+): Promise<boolean> {
+  const key = authedTodayKey(userId);
+  const current = parseInt((await kv.get(key)) ?? "0", 10);
+  if (current >= AUTHED_DAILY_LIMIT) return false;
+  await kv.put(key, String(current + 1), { expirationTtl: DAY_SECONDS });
+  return true;
+}
