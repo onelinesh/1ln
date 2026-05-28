@@ -14,6 +14,17 @@ MCP server for [1ln.sh](https://1ln.sh) — publishes shell scripts and returns 
 
 Returns: `{ one_liner, url, slug, delete_token }`.
 
+### Runtime parameters
+
+Scripts published via this tool can receive parameters from the consumer's curl URL. Append query string pairs and they're exposed as `ENV_1LN_*` environment variables inside the executing script:
+
+```
+curl 1ln.sh/<slug>?port=8080&env=staging | sh
+# Inside the script: $ENV_1LN_PORT="8080", $ENV_1LN_ENV="staging"
+```
+
+Keys are uppercased and prefixed; values are POSIX-safe single-quoted. Max 16 params, 1KB per value, 4KB total. Invalid keys are silently dropped. Useful for per-environment deploy scripts where you don't want to fork the script for each target.
+
 ## Install
 
 ### Claude Desktop
