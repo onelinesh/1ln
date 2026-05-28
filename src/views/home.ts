@@ -41,6 +41,21 @@ export function renderHome(): string {
   </div>
 </section>
 
+<section>
+  <h2>Pass parameters at runtime</h2>
+  <p class="secondary">
+    Append URL query parameters and they show up in the executing script as
+    <code>ENV_1LN_*</code> environment variables. Useful for per-environment
+    deploy scripts.
+  </p>
+  <pre>curl 1ln.sh/&lt;slug&gt;?port=8080&amp;env=staging | sh</pre>
+  <p class="secondary" style="font-size:12px;">
+    Keys must match <code>[a-zA-Z][a-zA-Z0-9_]{0,31}</code>; values are POSIX
+    single-quote escaped before injection (safe against shell metacharacters).
+    Max 16 params, 1KB per value, 4KB total. Invalid params are silently dropped.
+  </p>
+</section>
+
 <section class="example">
   <p class="block-label">How it works</p>
   <div class="hero-example" aria-label="How it works">
