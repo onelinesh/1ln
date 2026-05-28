@@ -45,7 +45,6 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .wm { display: inline-flex; align-items: center; line-height: 1; }
 .wm:hover { text-decoration: none; }
 .wm-text { font-weight: 700; font-size: clamp(1.4rem, 4vw, 1.75rem); letter-spacing: -0.04em; color: var(--text); }
-.wm-dot { color: var(--text); }
 
 .site-footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
 .site-footer .dot { color: var(--text-muted); }

@@ -31,10 +31,10 @@ const JSON_LD = JSON.stringify({
 
 export function renderHome(): string {
   return layout(
-    "1ln.sh — Host Shell Install Scripts as One-Line curl URLs",
+    "1ln.sh — Host Shell Scripts as One-Line curl URLs",
     `<section class="hero">
-  <h1>Host shell install scripts as one-line curl URLs</h1>
-  <p class="hero-tagline">Push a shell script with the 1ln CLI. Get back a short <code>curl 1ln.sh/&lt;slug&gt; | sh</code> URL you can run on any server. Also proxies GitHub install scripts.</p>
+  <h1>Shell scripts as curl URLs.</h1>
+  <p class="hero-tagline">Push a script, run it anywhere with <code>curl 1ln.sh/&lt;slug&gt; | sh</code>.</p>
   <div class="code-row">
     <pre id="install-cmd" data-copy-value="curl 1ln.sh/install | sh">curl 1ln.sh/install | sh</pre>
     ${renderCopyButton("install-cmd")}

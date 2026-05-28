@@ -76,7 +76,7 @@ describe("views", () => {
   it("renderHeader shows the 1ln.sh wordmark text", () => {
     const html = renderHome();
     expect(html).not.toMatch(/<img[^>]*wm-logo/);
-    expect(html).toContain('aria-label="1ln.sh home"');
+    expect(html).toContain('aria-label="1ln home"');
     expect(html).toContain('class="wm-text"');
   });
 
@@ -132,7 +132,7 @@ describe("views", () => {
 
   it("renderHome has a keyword-targeted H1 and title", () => {
     const html = renderHome();
-    expect(html).toMatch(/<h1>[^<]*one-line curl URLs<\/h1>/i);
+    expect(html).toMatch(/<h1>[^<]*curl URLs[^<]*<\/h1>/i);
     expect(html).toMatch(/<title>[^<]*One-Line curl URLs[^<]*<\/title>/i);
   });
 
