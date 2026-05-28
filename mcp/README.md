@@ -23,7 +23,7 @@ curl 1ln.sh/<slug>?port=8080&env=staging | sh
 # Inside the script: $ENV_1LN_PORT="8080", $ENV_1LN_ENV="staging"
 ```
 
-Keys are uppercased and prefixed; values are POSIX-safe single-quoted. Max 16 params, 1KB per value, 4KB total. Invalid keys are silently dropped. Useful for per-environment deploy scripts where you don't want to fork the script for each target.
+Keys must match `[a-zA-Z][a-zA-Z0-9_]{0,31}` and are uppercased before the `ENV_1LN_` prefix is applied; values are POSIX-safe single-quoted (shell metacharacters in user input are safe). Max 16 params, 1KB per value, 4KB total. Reserved keys (`view`, `meta`, `_*`) and anything that fails the regex are silently dropped — a typo never breaks the pipeline. Useful for per-environment deploy scripts where you don't want to fork the script for each target.
 
 ## Install
 

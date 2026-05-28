@@ -72,6 +72,7 @@ section + section { margin-top: 28px; }
 .block-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 12px; }
 .code-label { font-size: 12px; color: var(--text-secondary); margin: 0 0 6px; }
 .code-label code { background: var(--surface); border: 1px solid var(--border); padding: 0 4px; border-radius: 3px; font-size: 11px; color: var(--text-secondary); }
+.params-lede { margin: 0 0 14px; }
 
 .mcp-details { margin-top: 4px; }
 .mcp-details > summary { font-size: 12px; color: var(--text-secondary); cursor: pointer; padding: 4px 0; list-style: none; user-select: none; }
@@ -165,6 +166,8 @@ ${robots}
 <meta property="og:title" content="${escapeHtml(ogTitle)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:url" content="${escapeHtml(canonical)}">
+<meta name="twitter:title" content="${escapeHtml(ogTitle)}">
+<meta name="twitter:description" content="${escapeHtml(description)}">
 ${STATIC_META}
 ${opts.headExtra ?? ""}
 <style>${STYLES}</style>

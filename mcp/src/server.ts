@@ -12,7 +12,11 @@ export const TOOLS = [
       "Default expires is '24h'; pass '1run' for single-use. " +
       "Consumers can pass runtime parameters via the URL query string — e.g. `curl 1ln.sh/<slug>?port=8080&env=staging | sh` " +
       "exposes `ENV_1LN_PORT=8080` and `ENV_1LN_ENV=staging` to the executing script. " +
-      "If you're writing a script that takes per-environment values, reference them as `$ENV_1LN_<KEY>` and tell the user how to invoke it.",
+      "If you're writing a script that takes per-environment values, reference them as `$ENV_1LN_<KEY>` and tell the user how to invoke it. " +
+      "Parameter rules (enforce when authoring scripts): keys must match `[a-zA-Z][a-zA-Z0-9_]{0,31}` and are uppercased before the `ENV_1LN_` prefix is applied (`?port=8080` becomes `$ENV_1LN_PORT`). " +
+      "Values are POSIX single-quote escaped before injection, so shell metacharacters in user input are safe. " +
+      "Limits: max 16 params, 1 KB per value, 4 KB total. Reserved keys are silently dropped: `view`, `meta`, and any key beginning with `_`. " +
+      "Invalid keys/values are dropped silently rather than rejected, so a typo never breaks the pipeline — but agents authoring scripts should pick keys that pass the regex.",
     inputSchema: {
       type: "object",
       properties: {
