@@ -32,8 +32,13 @@ export function renderPreview(opts: {
   visibility: "public" | "private";
   createdAt: number;
   params?: Record<string, string>;
+  /** The user's query string (without leading `?`, with view/meta stripped),
+   *  used to reflect their preview in the copy-button oneliner. */
+  query?: string;
 }): string {
-  const oneliner = `curl 1ln.sh/${opts.slug} | sh`;
+  const oneliner = opts.query
+    ? `curl 1ln.sh/${opts.slug}?${opts.query} | sh`
+    : `curl 1ln.sh/${opts.slug} | sh`;
   const created = new Date(opts.createdAt).toISOString();
   const paramsSection = renderParamsSection(opts.params ?? {});
   return layout(

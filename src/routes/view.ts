@@ -6,6 +6,21 @@ import { renderPreview } from "../views/preview";
 import { renderGone } from "../views/gone";
 import { parseParams } from "../params";
 
+/**
+ * Strip route-control flags (view/meta) and underscore-prefixed system params
+ * from a URL's query string, returning a re-serialized string suitable for
+ * showing to a user as the params they invoked. Keys keep their original case.
+ */
+function userQueryString(url: URL): string {
+  const sp = new URLSearchParams();
+  for (const [k, v] of url.searchParams.entries()) {
+    if (k === "view" || k === "meta") continue;
+    if (k.startsWith("_")) continue;
+    sp.append(k, v);
+  }
+  return sp.toString();
+}
+
 export const view = new Hono<{ Bindings: Env }>();
 
 view.get("/:slug", async (c, next) => {
@@ -44,6 +59,7 @@ view.get("/:slug", async (c, next) => {
       visibility: row.visibility,
       createdAt: row.created_at,
       params: parseParams(url),
+      query: userQueryString(url),
     })
   );
 });

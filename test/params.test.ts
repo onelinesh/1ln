@@ -127,6 +127,12 @@ describe("parseParams", () => {
   it("decodes percent-encoding in values", () => {
     expect(parseParams(urlFor("?msg=hello%20world"))).toEqual({ MSG: "hello world" });
   });
+
+  it("silently drops values containing null bytes", () => {
+    const out = parseParams(urlFor("?msg=hello%00world&ok=fine"));
+    expect(out.MSG).toBeUndefined();
+    expect(out.OK).toBe("fine");
+  });
 });
 
 describe("buildPreamble", () => {

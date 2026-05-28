@@ -50,4 +50,29 @@ describe("GET /:slug?view with query params", () => {
     const html = await res.text();
     expect(html).not.toContain("Runtime parameters");
   });
+
+  it("copy-button oneliner reflects the user's params (no preamble in the curl)", async () => {
+    const { slug } = await createScript("echo hi\n", "192.0.2.124");
+    const res = await SELF.fetch(`http://x/${slug}?view&port=8080&env=staging`);
+    const html = await res.text();
+    // Copy-button data-copy-value must include the params verbatim (with view stripped).
+    expect(html).toContain(`data-copy-value="curl 1ln.sh/${slug}?port=8080&amp;env=staging | sh"`);
+  });
+
+  it("copy-button strips view and underscore-prefixed params from the oneliner", async () => {
+    const { slug } = await createScript("echo hi\n", "192.0.2.125");
+    // _internal should be stripped; port should survive; view is stripped by the route flag check.
+    const res = await SELF.fetch(`http://x/${slug}?view&_internal=x&port=8080`);
+    const html = await res.text();
+    expect(html).toContain(`data-copy-value="curl 1ln.sh/${slug}?port=8080 | sh"`);
+    expect(html).not.toContain("_internal");
+  });
+
+  it("copy-button shows bare curl (no ?) when there are no user params", async () => {
+    const { slug } = await createScript("echo hi\n", "192.0.2.126");
+    const res = await SELF.fetch(`http://x/${slug}?view`);
+    const html = await res.text();
+    expect(html).toContain(`data-copy-value="curl 1ln.sh/${slug} | sh"`);
+    expect(html).not.toContain(`curl 1ln.sh/${slug}? `);
+  });
 });

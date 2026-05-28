@@ -40,6 +40,10 @@ export function parseParams(url: URL): Record<string, string> {
 
     const valueBytes = encoder.encode(value).length;
     if (valueBytes > MAX_VALUE_BYTES) continue;
+    // Drop null bytes — they truncate variable values in most shells and serving
+    // them in text/plain is unusual. Strict drop rather than strip keeps the
+    // behavior predictable.
+    if (value.indexOf("\0") !== -1) continue;
 
     // The output key replaces a previous entry on duplicates, so we should
     // refund the old value's bytes before charging the new one.
