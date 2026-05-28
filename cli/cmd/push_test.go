@@ -147,3 +147,28 @@ func withStdin(t *testing.T, input string, fn func()) {
 	defer func() { os.Stdin = old }()
 	fn()
 }
+
+func TestPush_AttachesBearerWhenLoggedIn(t *testing.T) {
+	var seenAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seenAuth = r.Header.Get("authorization")
+		w.WriteHeader(201)
+		_, _ = w.Write([]byte(`{"slug":"a","url":"u","oneliner":"o"}`))
+	}))
+	defer srv.Close()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tokens.json")
+	s := &store.Store{Path: path, Token: "TKN"}
+	if err := s.Save(); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("ONELN_BASE_URL", srv.URL)
+	t.Setenv("ONELN_STORE", path)
+
+	if err := runPushWithStdin(strings.NewReader("echo x"), []string{}); err != nil {
+		t.Fatal(err)
+	}
+	if seenAuth != "Bearer TKN" {
+		t.Errorf("auth = %q", seenAuth)
+	}
+}
