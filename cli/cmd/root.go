@@ -22,6 +22,10 @@ func Run(args []string) error {
 		return runLogin(rest)
 	case "logout":
 		return runLogout(rest)
+	case "edit":
+		return runEdit(rest)
+	case "rename":
+		return runRename(rest)
 	case "version", "--version", "-v":
 		return runVersion()
 	case "help", "--help", "-h":
