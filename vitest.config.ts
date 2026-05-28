@@ -17,6 +17,8 @@ export default defineConfig(async () => {
           bindings: {
             TEST_MIGRATIONS: migrations,
             SCRIPT_HMAC_SECRET: "test-hmac-secret-do-not-use-in-prod",
+            GITHUB_OAUTH_CLIENT_ID: "test-client-id",
+            GITHUB_OAUTH_CLIENT_SECRET: "test-client-secret",
           },
         },
       }),
